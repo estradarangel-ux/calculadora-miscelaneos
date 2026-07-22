@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de material · Conduit y Charofil</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EDEFF1; --panel:#FFFFFF; --ink:#171C21; --muted:#5C6A76;
+    --line:#C9D1D8; --accent:#FFC400; --accent-ink:#171C21;
+    --steel:#8A97A3; --steel-dark:#46545F; --pvc:#1D7A4A; --tray:#3E6B8C;
+    --danger:#B3261E; --radius:10px;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --disp:"Saira Condensed","Arial Narrow",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding:16px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:18px}
+  .logo{background:var(--accent);color:var(--accent-ink);font-family:var(--disp);
+    font-weight:700;font-size:22px;letter-spacing:.06em;padding:6px 12px;
+    border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);text-transform:uppercase}
+  header h1{font-family:var(--disp);font-weight:700;text-transform:uppercase;
+    letter-spacing:.04em;font-size:24px;margin:0}
+  header p{margin:0;color:var(--muted);font-size:13px;flex-basis:100%}
+  .layout{display:grid;gap:18px}
+  @media(min-width:940px){.layout{grid-template-columns:1fr 1fr;align-items:start}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+  .card h2{font-family:var(--disp);font-weight:700;text-transform:uppercase;
+    letter-spacing:.05em;font-size:17px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+  .card h2::before{content:"";width:10px;height:10px;background:var(--accent);
+    border:2px solid var(--ink);display:inline-block}
+  label{display:block;font-size:12px;font-weight:600;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+  input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;
+    font:inherit;background:#FAFBFC;color:var(--ink)}
+  input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible,
+  .cl:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .field{margin-bottom:10px}
+  button{font:inherit;font-weight:700;cursor:pointer;border-radius:6px;
+    padding:11px 16px;border:2px solid var(--ink)}
+  .btn-main{width:100%;background:var(--accent);color:var(--accent-ink);
+    text-transform:uppercase;letter-spacing:.05em;font-family:var(--disp);
+    font-size:17px;box-shadow:3px 3px 0 var(--ink)}
+  .btn-main:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+  .btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line);
+    font-weight:600;padding:8px 12px;font-size:13px}
+  .btn-danger{background:none;border:none;color:var(--danger);font-size:18px;padding:4px 8px;line-height:1}
+  details.params{border:1px dashed var(--steel);border-radius:8px;
+    padding:10px 12px;margin-bottom:14px;background:#F6F8F9}
+  details.params summary{cursor:pointer;font-weight:700;font-size:13px;
+    text-transform:uppercase;letter-spacing:.05em;color:var(--steel-dark)}
+  .params h5{margin:12px 0 6px;font-size:11px;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--steel-dark);border-bottom:1px solid var(--line);padding-bottom:3px}
+  .hint{font-size:12px;color:var(--muted);margin:8px 0 0}
+  .sistema{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+  .sistema button{background:#fff;border:2px solid var(--line);color:var(--muted);
+    font-family:var(--disp);text-transform:uppercase;letter-spacing:.04em;font-size:15px;padding:9px 6px}
+  .sistema button.on{border-color:var(--ink);background:var(--ink);color:#fff}
+  .chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;
+    border-radius:99px;color:#fff;text-transform:uppercase;letter-spacing:.03em}
+  .chip.GD{background:var(--steel)} .chip.GG{background:var(--steel-dark)}
+  .chip.PVC{background:var(--pvc)} .chip.CH{background:var(--tray)}
+  .tramo{display:flex;justify-content:space-between;align-items:center;gap:10px;
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:#FAFBFC}
+  .tramo .info{min-width:0}
+  .tramo .info strong{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tramo .info span{font-size:12px;color:var(--muted)}
+  .tramo .num{font-family:var(--mono);font-weight:700;font-size:15px;white-space:nowrap}
+  .empty{color:var(--muted);font-size:13px;text-align:center;
+    border:1px dashed var(--line);border-radius:8px;padding:18px}
+  .ticket{background:#fff;border:1px solid var(--line);border-top:none;
+    border-radius:0 0 var(--radius) var(--radius);padding:18px 18px 22px;position:relative;margin-top:12px}
+  .ticket::before{content:"";position:absolute;top:-7px;left:0;right:0;height:14px;
+    background:radial-gradient(circle at 8px 7px,var(--bg) 5px,#fff 5.5px);
+    background-size:17px 14px;background-repeat:repeat-x}
+  .ticket-head{display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+  .ticket-head h3{font-family:var(--disp);text-transform:uppercase;letter-spacing:.06em;font-size:19px;margin:0}
+  .ticket-head .folio{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .seccion{font-family:var(--disp);text-transform:uppercase;letter-spacing:.06em;
+    font-size:14px;background:var(--ink);color:#fff;padding:3px 10px;margin:16px 0 10px;display:inline-block}
+  .area-tit{font-family:var(--disp);text-transform:uppercase;letter-spacing:.04em;
+    font-size:13px;color:var(--steel-dark);border-left:4px solid var(--accent);
+    padding-left:8px;margin:12px 0 6px}
+  .grupo{margin-bottom:14px}
+  .grupo-titulo{display:flex;align-items:center;gap:8px;font-weight:700;
+    font-size:14px;margin-bottom:6px;flex-wrap:wrap}
+  table.mat{width:100%;border-collapse:collapse;font-size:14px}
+  table.mat td{padding:4px 0;border-bottom:1px dotted var(--line)}
+  table.mat td:last-child{text-align:right;font-family:var(--mono);font-weight:700}
+  .cl{font-family:var(--mono);font-size:11px;background:#EDF3F8;color:#2C4A63;
+    border:1px solid #C5D6E4;border-radius:4px;padding:1px 5px;margin-left:6px;
+    white-space:nowrap;cursor:pointer}
+  .cl.na{background:#F4F1E4;color:#7A6A2F;border-color:#DBD2AC}
+  .cl.custom{background:#E6F3E9;color:#1D5A31;border-color:#B4D9BE}
+  .cl:hover{outline:2px solid var(--accent)}
+  .leyenda{font-size:11px;color:var(--muted);margin-top:8px}
+  .misc{background:#F6F8F9;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:8px}
+  .totales{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
+  .kpi{flex:1;min-width:105px;border:2px solid var(--ink);border-radius:8px;
+    padding:8px 10px;text-align:center;background:#fff}
+  .kpi b{display:block;font-family:var(--mono);font-size:21px}
+  .kpi span{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .nota{font-size:12px;color:var(--muted);margin-top:10px}
+  @media print{
+    body{background:#fff;padding:0}
+    header .logo{box-shadow:none}
+    .no-print{display:none !important}
+    .card{border:none;padding:0}
+    .ticket{border:1px solid #000}
+    .ticket::before{display:none}
+    .cl{cursor:default}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="logo">Conduit + Charofil</span>
+    <h1>Calculadora de material eléctrico</h1>
+    <p>Conduit (galvanizada delgada / gruesa / PVC, ½"–2") y escalerilla Charofil (50–300 mm). Captura por área con montaje aéreo o por pared, soportería desglosada por área y claves de syscom.mx editables que se guardan para futuros casos.</p>
+  </header>
+
+  <div class="layout">
+    <!-- ==================== CAPTURA ==================== -->
+    <section class="card no-print">
+      <h2>Captura de tramos</h2>
+
+      <div class="field">
+        <label for="obra">Obra / proyecto (aparece en el vale)</label>
+        <input id="obra" type="text" placeholder="Ej. Nave 3 · Planta León">
+      </div>
+
+      <details class="params">
+        <summary>Parámetros y catálogo de claves</summary>
+        <h5>Generales</h5>
+        <div class="grid2">
+          <div class="field"><label for="pDesp">Desperdicio (%)</label>
+            <input id="pDesp" type="number" step="1" min="0" max="50" value="5"></div>
+          <div class="field"><label for="pLargo">Largo tubo conduit (m)</label>
+            <input id="pLargo" type="number" step="0.01" min="1" value="3.05"></div>
+          <div class="field"><label for="pSep">Separación soportes conduit (m)</label>
+            <input id="pSep" type="number" step="0.1" min="0.3" value="1.5"></div>
+          <div class="field"><label for="pEspC">Ø espárrago p/ conduit</label>
+            <select id="pEspC"><option value='1/4"' selected>¼" (6.4 mm)</option>
+              <option value='3/8"'>⅜" (9.5 mm)</option></select></div>
+        </div>
+        <h5>Escalerilla Charofil</h5>
+        <div class="grid2">
+          <div class="field"><label for="pLargoCh">Largo de tramo (m)</label>
+            <input id="pLargoCh" type="number" step="0.5" min="1" value="3"></div>
+          <div class="field"><label for="pSepCh">Separación soportes (m)</label>
+            <input id="pSepCh" type="number" step="0.1" min="0.5" value="1.5"></div>
+          <div class="field"><label for="pUni">Uniones rápidas por empalme</label>
+            <input id="pUni" type="number" step="1" min="1" value="2"></div>
+          <div class="field"><label for="pClemas">Kits de clema por soporte</label>
+            <input id="pClemas" type="number" step="1" min="1" value="2"></div>
+          <div class="field"><label for="pEspCh">Ø espárrago p/ charola</label>
+            <select id="pEspCh"><option value='1/4"'>¼" (6.4 mm)</option>
+              <option value='3/8"' selected>⅜" (9.5 mm)</option></select></div>
+        </div>
+        <h5>Largos comerciales</h5>
+        <div class="grid2">
+          <div class="field"><label for="pLargoUni">Tramo de unicanal (m)</label>
+            <input id="pLargoUni" type="number" step="0.05" min="1" value="3.05"></div>
+          <div class="field"><label for="pLargoVar">Tramo de varilla roscada (m)</label>
+            <input id="pLargoVar" type="number" step="0.5" min="1" value="3"></div>
+        </div>
+        <h5>Catálogo de claves Syscom</h5>
+        <p class="hint" style="margin-top:0">Toca cualquier clave del vale para corregirla, o asígnala donde diga «s/clave». Los cambios se guardan en este dispositivo y se reutilizan en futuros casos. Compártelos con tu cuadrilla exportando el archivo de claves.</p>
+        <div class="acciones" style="margin-top:8px">
+          <button class="btn-ghost" type="button" id="btnExpCat">Exportar claves</button>
+          <button class="btn-ghost" type="button" id="btnImpCat">Importar claves</button>
+          <button class="btn-ghost" type="button" id="btnResetCat" style="color:var(--danger)">Restaurar originales</button>
+          <input type="file" id="fileCat" accept="application/json" hidden>
+        </div>
+        <p class="hint" id="catStatus"></p>
+      </details>
+
+      <div class="sistema" role="tablist" aria-label="Sistema a capturar">
+        <button type="button" id="tabC" class="on" role="tab" aria-selected="true">Tubería conduit</button>
+        <button type="button" id="tabCH" role="tab" aria-selected="false">Escalerilla Charofil</button>
+      </div>
+
+      <div class="field">
+        <label for="tArea">Área o sección</label>
+        <input id="tArea" type="text" placeholder="Ej. Nivel 1 · Alumbrado oficinas">
+      </div>
+
+      <!-- Campos conduit -->
+      <div id="formC">
+        <div class="grid2">
+          <div class="field"><label for="tTipo">Tipo de tubería</label>
+            <select id="tTipo">
+              <option value="GD">Galvanizada pared delgada</option>
+              <option value="GG">Galvanizada pared gruesa</option>
+              <option value="PVC">PVC conduit</option>
+            </select></div>
+          <div class="field"><label for="tDiam">Diámetro</label>
+            <select id="tDiam">
+              <option>½" (13 mm)</option><option>¾" (19 mm)</option>
+              <option>1" (25 mm)</option><option>1¼" (32 mm)</option>
+              <option>1½" (38 mm)</option><option>2" (51 mm)</option>
+            </select></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="tMontaje">¿La instalación es aérea o por pared?</label>
+            <select id="tMontaje">
+              <option value="A">Aérea (colgada de losa/techo)</option>
+              <option value="P">Por pared / muro</option>
+            </select></div>
+          <div class="field"><label for="tSujecion">Sujeción / abrazadera</label>
+            <select id="tSujecion"></select></div>
+        </div>
+        <div class="grid2" id="uniFieldsC" hidden>
+          <div class="field"><label for="tUniMedida">Medida de la unicanal</label>
+            <select id="tUniMedida">
+              <option value="4x2T">4x2 cm troquelada (perforada)</option>
+              <option value="4x2L">4x2 cm lisa</option>
+              <option value="4x4T">4x4 cm troquelada (perforada)</option>
+              <option value="4x4L">4x4 cm lisa</option>
+            </select></div>
+          <div class="field"><label for="tUniLargo">Largo de unicanal por soporte (m)</label>
+            <input id="tUniLargo" type="number" step="0.05" min="0.05" value="0.30" inputmode="decimal"></div>
+        </div>
+        <div class="grid2" id="espFieldC" >
+          <div class="field"><label for="tEspLargo">Largo promedio de espárrago (m)</label>
+            <input id="tEspLargo" type="number" step="0.05" min="0.05" value="0.40" inputmode="decimal"></div>
+        </div>
+        <div class="grid3">
+          <div class="field"><label for="tMetros">Metros lineales</label>
+            <input id="tMetros" type="number" step="0.1" min="0" placeholder="0.0" inputmode="decimal"></div>
+          <div class="field"><label for="tSalidas">Salidas a caja</label>
+            <input id="tSalidas" type="number" step="1" min="0" placeholder="0" inputmode="numeric"></div>
+          <div class="field"><label for="tCodos">Codos 90°</label>
+            <input id="tCodos" type="number" step="1" min="0" placeholder="0" inputmode="numeric"></div>
+        </div>
+        <p class="hint">Aérea con clip: colgador tipo pera + 1 espárrago por soporte. Aérea con unicanal: trapecio con 2 espárragos por soporte. Por pared con unicanal: se fija con 2 anclas por soporte. Uña = 1 pija/taquete por pieza, omega = 2.</p>
+      </div>
+
+      <!-- Campos charofil -->
+      <div id="formCH" hidden>
+        <div class="grid2">
+          <div class="field"><label for="cAncho">Ancho de escalerilla</label>
+            <select id="cAncho">
+              <option>50 mm</option><option>100 mm</option><option>150 mm</option>
+              <option selected>200 mm</option><option>300 mm</option>
+            </select></div>
+          <div class="field"><label for="cMetros">Metros lineales</label>
+            <input id="cMetros" type="number" step="0.1" min="0" placeholder="0.0" inputmode="decimal"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="cMontaje">¿La instalación es aérea o por pared?</label>
+            <select id="cMontaje">
+              <option value="A">Aérea (trapecio colgado)</option>
+              <option value="P">Por pared / muro</option>
+            </select></div>
+          <div class="field"><label for="cUniMedida">Medida de la unicanal</label>
+            <select id="cUniMedida">
+              <option value="4x2T">4x2 cm troquelada (perforada)</option>
+              <option value="4x2L">4x2 cm lisa</option>
+              <option value="4x4T" selected>4x4 cm troquelada (perforada)</option>
+              <option value="4x4L">4x4 cm lisa</option>
+            </select></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="cUniLargo">Largo de unicanal por soporte (m)</label>
+            <input id="cUniLargo" type="number" step="0.05" min="0.05" placeholder="Auto: ancho + 15 cm" inputmode="decimal"></div>
+          <div class="field" id="espFieldCH"><label for="cEspLargo">Largo promedio de espárrago (m)</label>
+            <input id="cEspLargo" type="number" step="0.05" min="0.05" value="0.40" inputmode="decimal"></div>
+        </div>
+        <p class="hint">Aérea: trapecio de unicanal con 2 espárragos por soporte (ancla, 2 tuercas y 2 rondanas c/u). Por pared: la unicanal se fija con 2 anclas por soporte. Uniones rápidas y kits de clema se calculan con los parámetros.</p>
+      </div>
+
+      <button class="btn-main" id="btnAdd" type="button">+ Agregar tramo</button>
+
+      <h2 style="margin-top:18px">Tramos capturados</h2>
+      <div id="listaTramos"></div>
+    </section>
+
+    <!-- ==================== RESUMEN / VALE ==================== -->
+    <section class="card" id="seccionVale">
+      <h2 class="no-print">Lista de material</h2>
+      <div class="ticket" id="ticket">
+        <div class="ticket-head">
+          <h3>Vale de material · Instalación eléctrica</h3>
+          <span class="folio" id="folio"></span>
+        </div>
+        <div id="ticketBody"></div>
+      </div>
+      <div class="acciones no-print">
+        <button class="btn-ghost" type="button" id="btnCopiar">Copiar lista</button>
+        <button class="btn-ghost" type="button" id="btnCotizar" style="border-color:var(--ink);border-width:2px">Copiar p/ cotizar</button>
+        <button class="btn-ghost" type="button" id="btnCSV">Descargar CSV</button>
+        <button class="btn-ghost" type="button" id="btnPrint">Imprimir / PDF</button>
+        <button class="btn-ghost" type="button" id="btnLimpiar" style="color:var(--danger)">Borrar todo</button>
+      </div>
+      <p class="nota no-print">Los tramos capturados viven solo en esta sesión (descarga el CSV o imprime antes de cerrar); las claves editadas sí se guardan en el dispositivo. Cantidades estimadas: verificar contra plano y existencias.</p>
+    </section>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =============== Catálogos =============== */
+const TIPOS = {
+  GD:  { nombre:"Galvanizada pared delgada", conexion:"Conector pared delgada" },
+  GG:  { nombre:"Galvanizada pared gruesa",  conexion:"Monitor + contra" },
+  PVC: { nombre:"PVC conduit",               conexion:"Adaptador terminal PVC" }
+};
+const DIAM_CODE = { '½" (13 mm)':"12", '¾" (19 mm)':"34", '1" (25 mm)':"100",
+                    '1¼" (32 mm)':"114", '1½" (38 mm)':"112", '2" (51 mm)':"200" };
+const ANCHO_CODE = { "50 mm":"50", "100 mm":"100", "150 mm":"150", "200 mm":"200", "300 mm":"300" };
+const UNI_NOMBRE = { "4x2L":"Unicanal 4x2 lisa", "4x2T":"Unicanal 4x2 troquelada",
+                     "4x4L":"Unicanal 4x4 lisa", "4x4T":"Unicanal 4x4 troquelada" };
+const SUJ_NOMBRE = { clip:"Clip colgador", uni:"Trapecio unicanal",
+  una:"Abrazadera uña", omega:"Abrazadera omega",
+  uniAbr:"Unicanal c/ abrazadera", uniClip:"Unicanal c/ clip" };
+const ABR_NOMBRE = {
+  una:   { D:"Abrazadera uña p. delgada",      G:"Abrazadera uña p. gruesa/PVC" },
+  omega: { D:"Abrazadera omega p. delgada",    G:"Abrazadera omega p. gruesa" },
+  clip:  { D:"Abrazadera clip p. delgada",     G:"Abrazadera clip p. gruesa/PVC" },
+  strut: { D:"Abrazadera unicanal p. delgada", G:"Abrazadera unicanal p. gruesa/PVC" }
+};
+/* Claves base de syscom.mx: ok=true vista en el sitio; ok=false deducida del patrón */
+const BASE = {};
+function def(key, c, ok){ BASE[key] = c ? { c, ok } : null; }
+Object.values(DIAM_CODE).forEach(d => {
+  def("tubo|GD|" + d, "JU-PD-" + d + "-TUB", true);
+  def("tubo|GG|" + d, "JU-PG-" + d + "-TUB", true);
+  def("tubo|PVC|" + d, "ATUP-" + d + "-TUB", ["34","114"].includes(d));
+  def("codo|GD|" + d, "JU-PD-" + d + "-COD", d !== "34");
+  def("codo|GG|" + d, "JU-PG-" + d + "-COD", ["12","100"].includes(d));
+  def("codo|PVC|" + d, "ATUP-" + d + "-COD", ["34","100","112","200"].includes(d));
+  def("cople|GD|" + d, "ANC-CPD" + d, ["34","100","114"].includes(d));
+  def("cople|GG|" + d, "JU-PG-" + d + "-COP", ["12","100"].includes(d));
+  def("cople|PVC|" + d, "ATUP-" + d + "-COP", d === "114");
+  def("conector|GD|" + d, "ANC-CCL" + d, ["12","34","100","200"].includes(d));
+  def("conector|PVC|" + d, "ATUP-" + d + "-CON", false);
+  def("monitor|" + d, "ANC-MT-" + d, ["12","200"].includes(d));
+  def("abr|una|D|" + d, "ANC-UC-" + d, d === "112");
+  def("abr|strut|D|" + d, "ANC-AW-" + d, ["12","114"].includes(d));
+  def("abr|strut|G|" + d, "ANC-AE-" + d, d === "100");
+  ["contra|","colgador|","abr|una|G|","abr|omega|D|","abr|omega|G|",
+   "abr|clip|D|","abr|clip|G|"].forEach(pfx => def(pfx + d, null, false));
+});
+Object.values(ANCHO_CODE).forEach(a => {
+  def("charola|" + a, "CH-54-" + a + "EZ", ["100","150"].includes(a));
+  def("union|" + a, a === "300" ? "MG-51-110EZ" : "MG-67-112EZ", true);
+});
+def("kitclema", "MG-51-KIT1EZ", true);
+def("uni|4x2L", "UNL-4X2-U30-EZ", true);
+def("uni|4x2T", "UNP-4X2-U30-EZ", false);
+def("uni|4x4L", "UNL-4X4-U30-EZ", false);
+def("uni|4x4T", "UNP-4X4-U30-EZ", false);
+def('varilla|1/4"', "CH-VR-6-3000", true);
+def('varilla|3/8"', "CH-VR-9-3000", true);
+def('taqZ|1/4"', "ANC-Z14", true);
+def('taqZ|3/8"', "ANC-Z38", false);
+['tuerca|1/4"','tuerca|3/8"','rondana|1/4"','rondana|3/8"',
+ "anclaMuro","pija","taquete","cemento"].forEach(k => def(k, null, false));
+
+/* =============== Claves editables con guardado =============== */
+let OVR = {};   // { key: clave manual }
+const store = {
+  async load(){
+    try{
+      if (window.storage){
+        const r = await window.storage.get("claves-syscom");
+        if (r && r.value) return JSON.parse(r.value);
+      }
+    }catch(e){}
+    try{
+      const v = window.localStorage && localStorage.getItem("claves-syscom");
+      if (v) return JSON.parse(v);
+    }catch(e){}
+    return {};
+  },
+  async save(o){
+    let ok = false;
+    try{
+      if (window.storage){ await window.storage.set("claves-syscom", JSON.stringify(o)); ok = true; }
+    }catch(e){}
+    if (!ok){
+      try{ localStorage.setItem("claves-syscom", JSON.stringify(o)); ok = true; }catch(e){}
+    }
+    return ok;
+  }
+};
+function getClave(key){
+  if (Object.prototype.hasOwnProperty.call(OVR, key))
+    return { c: OVR[key], ok: true, custom: true };
+  return BASE[key] !== undefined ? BASE[key] : null;
+}
+async function editarClave(key, nombre){
+  const actual = getClave(key);
+  const v = prompt("Clave Syscom para:\n" + nombre +
+    "\n\n(Deja vacío para volver a la clave original)", actual ? actual.c : "");
+  if (v === null) return;
+  const limpio = v.trim();
+  if (limpio) OVR[key] = limpio; else delete OVR[key];
+  const guardado = await store.save(OVR);
+  $("catStatus").textContent = guardado
+    ? "Claves guardadas en este dispositivo (" + Object.keys(OVR).length + " personalizadas)."
+    : "Sin almacenamiento disponible: exporta las claves para no perderlas.";
+  render();
+}
+
+/* =============== Estado =============== */
+let tramos = [];
+let sistemaActivo = "C";
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString("es-MX");
+const r1 = n => Math.round(n * 10) / 10;
+const r2 = n => Math.round(n * 100) / 100;
+
+function leerParams(){
+  const num = (id, def, min) => Math.max(parseFloat($(id).value) || def, min);
+  return {
+    desp: Math.max(parseFloat($("pDesp").value) || 0, 0) / 100,
+    largo: num("pLargo", 3.05, 0.5), sep: num("pSep", 1.5, 0.3),
+    espC: $("pEspC").value, espCh: $("pEspCh").value,
+    largoCh: num("pLargoCh", 3, 0.5), sepCh: num("pSepCh", 1.5, 0.3),
+    uniones: Math.max(parseInt($("pUni").value, 10) || 2, 1),
+    clemas: Math.max(parseInt($("pClemas").value, 10) || 2, 1),
+    largoUni: num("pLargoUni", 3.05, 0.5), largoVar: num("pLargoVar", 3, 0.5)
+  };
+}
+
+/* =============== Cálculo por tramo =============== */
+function calcConduit(t, p){
+  const tubos = t.metros > 0 ? Math.ceil(t.metros * (1 + p.desp) / p.largo) : 0;
+  const s = t.metros > 0 ? Math.ceil(t.metros / p.sep) : 0;
+  const fam = t.tipo === "GD" ? "D" : "G";
+  const out = {
+    tubos, coples: tubos,
+    conectores: t.tipo !== "GG" ? t.salidas : 0,
+    monitores: t.tipo === "GG" ? t.salidas : 0,
+    contras: t.tipo === "GG" ? t.salidas : 0,
+    codos: t.codos, soportes: s, fam,
+    abrKey: null, colgadores: 0, pijas: 0, taquetes: 0,
+    uniMedida: null, uniM: 0, espPzas: 0, espM: 0, anclasMuro: 0
+  };
+  if (s === 0) return out;
+  if (t.montaje === "A"){
+    if (t.sujecion === "clip"){
+      out.colgadores = s; out.espPzas = s; out.espM = s * t.espLargo;
+    } else {
+      out.abrKey = "strut";
+      out.uniMedida = t.uniMedida; out.uniM = s * t.uniLargo;
+      out.espPzas = s * 2; out.espM = s * 2 * t.espLargo;
+    }
+  } else {
+    if (t.sujecion === "una"){ out.abrKey = "una"; out.pijas = s; out.taquetes = s; }
+    else if (t.sujecion === "omega"){ out.abrKey = "omega"; out.pijas = s * 2; out.taquetes = s * 2; }
+    else {
+      out.abrKey = t.sujecion === "uniAbr" ? "strut" : "clip";
+      out.uniMedida = t.uniMedida; out.uniM = s * t.uniLargo;
+      out.anclasMuro = s * 2;
+    }
+  }
+  return out;
+}
+function calcCharofil(t, p){
+  const tr = t.metros > 0 ? Math.ceil(t.metros * (1 + p.desp) / p.largoCh) : 0;
+  const s = t.metros > 0 ? Math.ceil(t.metros / p.sepCh) : 0;
+  const largo = t.uniLargo > 0 ? t.uniLargo : (parseInt(t.ancho, 10) / 1000 + 0.15);
+  const out = { tramos: tr, uniones: tr * p.uniones, soportes: s,
+    clemas: s * p.clemas, uniMedida: t.uniMedida, uniM: s * largo,
+    espPzas: 0, espM: 0, anclasMuro: 0 };
+  if (t.montaje === "A"){ out.espPzas = s * 2; out.espM = s * 2 * t.espLargo; }
+  else out.anclasMuro = s * 2;
+  return out;
+}
+
+/* =============== Agregación =============== */
+function nuevoSop(){
+  return { abr:new Map(), colg:new Map(), uni:new Map(), esp:new Map(),
+    anclasMuro:0, pijas:0, taquetes:0, clemas:0, unionesCh:0, sopCh:0 };
+}
+function addEsp(m, dm, pzas, metros){
+  const e = m.get(dm) || { pzas:0, m:0 };
+  e.pzas += pzas; e.m += metros; m.set(dm, e);
+}
+function agrupar(){
+  const p = leerParams();
+  const gruposC = new Map(), gruposCh = new Map(), areas = new Map();
+  const tot = nuevoSop();
+  let unionesPVC = 0, mConduit = 0, mCharola = 0, tubosTot = 0, tramosChTot = 0;
+  const sopArea = area => {
+    if (!areas.has(area)) areas.set(area, nuevoSop());
+    return areas.get(area);
+  };
+  const addUni = (m, medida, metros) => m.set(medida, (m.get(medida) || 0) + metros);
+
+  tramos.forEach(t => {
+    if (t.sistema === "C"){
+      const c = calcConduit(t, p);
+      const key = t.tipo + "|" + t.diam;
+      if (!gruposC.has(key)) gruposC.set(key, { tipo:t.tipo, diam:t.diam, metros:0,
+        tubos:0, coples:0, conectores:0, monitores:0, contras:0, codos:0 });
+      const g = gruposC.get(key);
+      g.metros += t.metros; g.tubos += c.tubos; g.coples += c.coples;
+      g.conectores += c.conectores; g.monitores += c.monitores;
+      g.contras += c.contras; g.codos += c.codos;
+      const a = sopArea(t.area);
+      [a, tot].forEach(sp => {
+        if (c.abrKey){
+          const ak = c.abrKey + "|" + c.fam + "|" + t.diam;
+          sp.abr.set(ak, (sp.abr.get(ak) || 0) + c.soportes);
+        }
+        if (c.colgadores) sp.colg.set(t.diam, (sp.colg.get(t.diam) || 0) + c.colgadores);
+        if (c.uniM) addUni(sp.uni, c.uniMedida, c.uniM);
+        if (c.espPzas) addEsp(sp.esp, p.espC, c.espPzas, c.espM);
+        sp.anclasMuro += c.anclasMuro; sp.pijas += c.pijas; sp.taquetes += c.taquetes;
+      });
+      mConduit += t.metros; tubosTot += c.tubos;
+      if (t.tipo === "PVC") unionesPVC += c.coples + c.conectores + c.codos;
+    } else {
+      const c = calcCharofil(t, p);
+      if (!gruposCh.has(t.ancho)) gruposCh.set(t.ancho,
+        { ancho:t.ancho, metros:0, tramos:0, uniones:0, clemas:0, soportes:0 });
+      const g = gruposCh.get(t.ancho);
+      g.metros += t.metros; g.tramos += c.tramos; g.uniones += c.uniones;
+      g.clemas += c.clemas; g.soportes += c.soportes;
+      const a = sopArea(t.area);
+      [a, tot].forEach(sp => {
+        addUni(sp.uni, c.uniMedida, c.uniM);
+        if (c.espPzas) addEsp(sp.esp, p.espCh, c.espPzas, c.espM);
+        sp.anclasMuro += c.anclasMuro;
+        sp.clemas += c.clemas; sp.unionesCh += c.uniones; sp.sopCh += c.soportes;
+      });
+      mCharola += t.metros; tramosChTot += c.tramos;
+    }
+  });
+
+  const uniTramos = new Map();
+  tot.uni.forEach((m, medida) => uniTramos.set(medida, Math.ceil(m / p.largoUni)));
+  const varillas = new Map(), taqZ = new Map(), tuercas = new Map(), rondanas = new Map();
+  tot.esp.forEach((e, dm) => {
+    varillas.set(dm, Math.ceil(e.m / p.largoVar));
+    taqZ.set(dm, e.pzas); tuercas.set(dm, e.pzas * 2); rondanas.set(dm, e.pzas * 2);
+  });
+  return {
+    gruposC: [...gruposC.values()], gruposCh: [...gruposCh.values()],
+    areas, tot, uniTramos, varillas, taqZ, tuercas, rondanas,
+    cemento: unionesPVC > 0 ? Math.ceil(unionesPVC / 75) : 0,
+    mConduit, mCharola, tubosTot, tramosChTot
+  };
+}
+
+/* =============== Partidas para cotizar (totales) =============== */
+function partidasCotizacion(d){
+  const out = [];
+  const push = (nombre, key, cant, unidad) => {
+    if (cant > 0) out.push({ nombre, key, clave: getClave(key), cant, unidad: unidad || "pza" });
+  };
+  d.gruposC.forEach(g => {
+    const dc = DIAM_CODE[g.diam], n = TIPOS[g.tipo].nombre + " " + g.diam;
+    push("Tubo " + n + " (3 m)", "tubo|" + g.tipo + "|" + dc, g.tubos);
+    push("Cople " + n, "cople|" + g.tipo + "|" + dc, g.coples);
+    if (g.conectores) push(TIPOS[g.tipo].conexion + " " + g.diam,
+      "conector|" + g.tipo + "|" + dc, g.conectores);
+    if (g.monitores){
+      push("Monitor " + g.diam, "monitor|" + dc, g.monitores);
+      push("Contratuerca " + g.diam, "contra|" + dc, g.contras);
+    }
+    push("Codo 90° " + n, "codo|" + g.tipo + "|" + dc, g.codos);
+  });
+  d.gruposCh.forEach(g => {
+    const a = ANCHO_CODE[g.ancho];
+    push("Charola Charofil 54/" + g.ancho + " (3 m)", "charola|" + a, g.tramos);
+    push("Unión rápida charola " + g.ancho, "union|" + a, g.uniones);
+    push("Kit de clema charola " + g.ancho, "kitclema", g.clemas);
+  });
+  d.tot.abr.forEach((n, ak) => {
+    const parts = ak.split("|");
+    push(ABR_NOMBRE[parts[0]][parts[1]] + " " + parts[2],
+      "abr|" + parts[0] + "|" + parts[1] + "|" + DIAM_CODE[parts[2]], n);
+  });
+  d.tot.colg.forEach((n, diam) =>
+    push("Colgador tipo pera " + diam, "colgador|" + DIAM_CODE[diam], n));
+  d.uniTramos.forEach((n, medida) =>
+    push(UNI_NOMBRE[medida] + " (tramo 3 m)", "uni|" + medida, n));
+  [...d.tot.esp.keys()].sort().forEach(dm => {
+    push("Varilla roscada " + dm + " x 3 m", "varilla|" + dm, d.varillas.get(dm));
+    push("Taquete expansor Z " + dm + " (varilla)", "taqZ|" + dm, d.taqZ.get(dm));
+    push("Tuerca hexagonal " + dm, "tuerca|" + dm, d.tuercas.get(dm));
+    push("Rondana plana " + dm, "rondana|" + dm, d.rondanas.get(dm));
+  });
+  push("Ancla a muro c/ tornillo (unicanal)", "anclaMuro", d.tot.anclasMuro);
+  push("Pija multiusos", "pija", d.tot.pijas);
+  push("Taquete plástico", "taquete", d.tot.taquetes);
+  push("Cemento PVC 250 ml", "cemento", d.cemento, "bote");
+  return out;
+}
+
+/* =============== UI: formulario =============== */
+const SUJ_OPCIONES = {
+  A: [["clip","Abrazadera clip (colgador a espárrago)"], ["uni","Trapecio de unicanal"]],
+  P: [["una","Abrazadera uña"], ["omega","Abrazadera omega"],
+      ["uniAbr","Unicanal con abrazadera"], ["uniClip","Unicanal con clip"]]
+};
+function refrescarSujecion(){
+  const m = $("tMontaje").value;
+  const sel = $("tSujecion");
+  const prev = sel.value;
+  sel.innerHTML = "";
+  SUJ_OPCIONES[m].forEach(par => {
+    const o = document.createElement("option");
+    o.value = par[0]; o.textContent = par[1]; sel.appendChild(o);
+  });
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+  refrescarCamposC();
+}
+function refrescarCamposC(){
+  const m = $("tMontaje").value, s = $("tSujecion").value;
+  const usaUni = (m === "A" && s === "uni") || (m === "P" && (s === "uniAbr" || s === "uniClip"));
+  $("uniFieldsC").hidden = !usaUni;
+  $("espFieldC").hidden = m !== "A";
+}
+function refrescarCamposCH(){
+  $("espFieldCH").style.visibility = $("cMontaje").value === "A" ? "visible" : "hidden";
+}
+
+function agregarTramo(){
+  if (sistemaActivo === "C"){
+    const metros  = parseFloat($("tMetros").value)   || 0;
+    const salidas = parseInt($("tSalidas").value,10) || 0;
+    const codos   = parseInt($("tCodos").value,10)   || 0;
+    if (metros <= 0 && salidas <= 0 && codos <= 0){ $("tMetros").focus(); return; }
+    tramos.push({
+      id: Date.now() + Math.random(), sistema:"C",
+      area: $("tArea").value.trim() || "Sin área",
+      tipo: $("tTipo").value, diam: $("tDiam").value,
+      montaje: $("tMontaje").value, sujecion: $("tSujecion").value,
+      uniMedida: $("tUniMedida").value,
+      uniLargo: Math.max(parseFloat($("tUniLargo").value) || 0.30, 0.05),
+      espLargo: Math.max(parseFloat($("tEspLargo").value) || 0.40, 0.05),
+      metros, salidas, codos
+    });
+    $("tMetros").value = ""; $("tSalidas").value = ""; $("tCodos").value = "";
+  } else {
+    const metros = parseFloat($("cMetros").value) || 0;
+    if (metros <= 0){ $("cMetros").focus(); return; }
+    tramos.push({
+      id: Date.now() + Math.random(), sistema:"CH",
+      area: $("tArea").value.trim() || "Sin área",
+      ancho: $("cAncho").value, metros,
+      montaje: $("cMontaje").value, uniMedida: $("cUniMedida").value,
+      uniLargo: parseFloat($("cUniLargo").value) || 0,
+      espLargo: Math.max(parseFloat($("cEspLargo").value) || 0.40, 0.05)
+    });
+    $("cMetros").value = "";
+  }
+  $("tArea").focus();
+  render();
+}
+function quitarTramo(id){ tramos = tramos.filter(t => t.id !== id); render(); }
+function setSistema(s){
+  sistemaActivo = s;
+  $("formC").hidden = s !== "C"; $("formCH").hidden = s !== "CH";
+  $("tabC").classList.toggle("on", s === "C");
+  $("tabCH").classList.toggle("on", s === "CH");
+  $("tabC").setAttribute("aria-selected", s === "C");
+  $("tabCH").setAttribute("aria-selected", s === "CH");
+}
+
+function renderTramos(){
+  const cont = $("listaTramos");
+  if (!tramos.length){
+    cont.innerHTML = '<div class="empty">Aún no hay tramos. Agrega el primero arriba.</div>';
+    return;
+  }
+  cont.innerHTML = "";
+  tramos.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "tramo";
+    const mont = t.montaje === "A" ? "Aérea" : "Pared";
+    let desc;
+    if (t.sistema === "C"){
+      desc = '<span class="chip ' + t.tipo + '">' + t.tipo + "</span> " +
+        TIPOS[t.tipo].nombre + " · " + t.diam + " · " + mont + " · " +
+        SUJ_NOMBRE[t.sujecion] + " · " + t.salidas + " sal · " + t.codos + " codos";
+    } else {
+      desc = '<span class="chip CH">CH</span> Charofil ' + t.ancho + " · " + mont +
+        " · " + UNI_NOMBRE[t.uniMedida];
+    }
+    div.innerHTML = '<div class="info"><strong></strong><span>' + desc + "</span></div>" +
+      '<div class="num">' + fmt(t.metros) + " m</div>";
+    div.querySelector("strong").textContent = t.area;
+    const btn = document.createElement("button");
+    btn.className = "btn-danger"; btn.type = "button";
+    btn.setAttribute("aria-label", "Eliminar tramo " + t.area);
+    btn.textContent = "✕";
+    btn.addEventListener("click", () => quitarTramo(t.id));
+    div.appendChild(btn);
+    cont.appendChild(div);
+  });
+}
+
+/* =============== UI: vale =============== */
+function esc(s){ return s.replace(/[<>&"]/g, ch =>
+  ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[ch])); }
+function tagClave(key, nombre){
+  const cv = getClave(key);
+  const attrs = ' role="button" tabindex="0" data-key="' + esc(key) +
+    '" data-nombre="' + esc(nombre) + '" title="Toca para editar la clave"';
+  if (!cv) return '<span class="cl na"' + attrs + ">s/clave ✎</span>";
+  const cls = cv.custom ? "cl custom" : "cl";
+  return '<span class="' + cls + '"' + attrs + ">" + esc(cv.c) +
+    (cv.ok || cv.custom ? "" : "*") + "</span>";
+}
+function fila(nombre, cant, opts){
+  const o = opts || {};
+  const et = o.key ? tagClave(o.key, nombre) : "";
+  const v = o.dec ? fmt(r2(cant)) : fmt(cant);
+  return "<tr><td>" + nombre + et + "</td><td>" + v + (o.suf || "") + "</td></tr>";
+}
+function filasSoporteria(sp){
+  let h = "";
+  sp.abr.forEach((n, ak) => {
+    const parts = ak.split("|");
+    const nom = ABR_NOMBRE[parts[0]][parts[1]] + " " + parts[2];
+    h += fila(nom + " (pza)", n, { key: "abr|" + parts[0] + "|" + parts[1] + "|" + DIAM_CODE[parts[2]] });
+  });
+  sp.colg.forEach((n, diam) =>
+    h += fila("Colgador tipo pera " + diam + " (pza)", n, { key: "colgador|" + DIAM_CODE[diam] }));
+  sp.uni.forEach((m, medida) =>
+    h += fila(UNI_NOMBRE[medida], m, { key: "uni|" + medida, dec: true, suf: " m" }));
+  [...sp.esp.keys()].sort().forEach(dm => {
+    const e = sp.esp.get(dm);
+    h += fila("Espárragos " + dm + " (" + fmt(r2(e.m)) + " m)", e.pzas, {}) +
+         fila("Taquete expansor Z " + dm + " (pza)", e.pzas, { key: "taqZ|" + dm }) +
+         fila("Tuerca hexagonal " + dm + " (pza)", e.pzas * 2, { key: "tuerca|" + dm }) +
+         fila("Rondana plana " + dm + " (pza)", e.pzas * 2, { key: "rondana|" + dm });
+  });
+  if (sp.anclasMuro) h += fila("Ancla a muro c/ tornillo (pza)", sp.anclasMuro, { key: "anclaMuro" });
+  if (sp.pijas) h += fila("Pijas (pza)", sp.pijas, { key: "pija" }) +
+                     fila("Taquetes plásticos (pza)", sp.taquetes, { key: "taquete" });
+  if (sp.clemas) h += fila("Kits de clema (pza)", sp.clemas, { key: "kitclema" }) +
+                      fila("Uniones rápidas de charola (pza)", sp.unionesCh, {}) +
+                      fila("Soportes de charola (pto)", sp.sopCh, {});
+  return h;
+}
+function renderTicket(){
+  const d = agrupar();
+  const obra = $("obra").value.trim();
+  const hoy = new Date();
+  const fecha = hoy.toLocaleDateString("es-MX", { day:"2-digit", month:"short", year:"numeric" });
+  $("folio").textContent = "FOLIO " + hoy.getFullYear() +
+    String(hoy.getMonth()+1).padStart(2,"0") + String(hoy.getDate()).padStart(2,"0") +
+    "-" + String(tramos.length).padStart(2,"0") + " · " + fecha;
+
+  const body = $("ticketBody");
+  if (!d.gruposC.length && !d.gruposCh.length){
+    body.innerHTML = '<div class="empty">El vale se llena solo conforme agregas tramos.</div>';
+    return;
+  }
+  let html = obra ? '<p style="margin:0 0 6px;font-size:13px"><b>Obra:</b> ' + esc(obra) + "</p>" : "";
+
+  if (d.gruposC.length){
+    html += '<div class="seccion">Tubería conduit</div>';
+    ["GD","GG","PVC"].forEach(tipo => {
+      d.gruposC.filter(g => g.tipo === tipo)
+        .sort((a,b) => a.diam.localeCompare(b.diam, "es"))
+        .forEach(g => {
+          const dc = DIAM_CODE[g.diam];
+          html += '<div class="grupo"><div class="grupo-titulo">' +
+            '<span class="chip ' + g.tipo + '">' + g.tipo + "</span>" +
+            TIPOS[g.tipo].nombre + " · " + g.diam +
+            ' <span style="color:var(--muted);font-weight:400">(' + fmt(r1(g.metros)) + " m)</span></div>" +
+            '<table class="mat"><tbody>' +
+            fila("Tubo de 3 m (pza)", g.tubos, { key: "tubo|" + g.tipo + "|" + dc }) +
+            fila("Cople (pza)", g.coples, { key: "cople|" + g.tipo + "|" + dc });
+          if (g.conectores) html += fila(TIPOS[g.tipo].conexion + " (pza)", g.conectores,
+            { key: "conector|" + g.tipo + "|" + dc });
+          if (g.monitores) html += fila("Monitor (pza)", g.monitores, { key: "monitor|" + dc }) +
+            fila("Contratuerca (pza)", g.contras, { key: "contra|" + dc });
+          if (g.codos) html += fila("Codo 90° (pza)", g.codos, { key: "codo|" + g.tipo + "|" + dc });
+          html += "</tbody></table></div>";
+        });
+    });
+  }
+  if (d.gruposCh.length){
+    html += '<div class="seccion">Escalerilla Charofil</div>';
+    d.gruposCh.sort((a,b) => parseInt(a.ancho,10) - parseInt(b.ancho,10)).forEach(g => {
+      const a = ANCHO_CODE[g.ancho];
+      html += '<div class="grupo"><div class="grupo-titulo">' +
+        '<span class="chip CH">CH</span>Escalerilla 54/' + g.ancho +
+        ' <span style="color:var(--muted);font-weight:400">(' + fmt(r1(g.metros)) + " m)</span></div>" +
+        '<table class="mat"><tbody>' +
+        fila("Tramo de charola 3 m (pza)", g.tramos, { key: "charola|" + a }) +
+        fila("Unión rápida (pza)", g.uniones, { key: "union|" + a }) +
+        fila("Kit de clema (pza)", g.clemas, { key: "kitclema" }) +
+        "</tbody></table></div>";
+    });
+  }
+
+  html += '<div class="seccion">Soportería por área</div>';
+  [...d.areas.keys()].sort((a,b) => a.localeCompare(b, "es")).forEach(area => {
+    const filasA = filasSoporteria(d.areas.get(area));
+    if (!filasA) return;
+    html += '<div class="grupo"><div class="area-tit">' + esc(area) + "</div>" +
+      '<table class="mat"><tbody>' + filasA + "</tbody></table></div>";
+  });
+
+  html += '<div class="misc"><div class="seccion" style="margin-top:0">Total soportería (p/ compra)</div>' +
+    '<table class="mat"><tbody>';
+  d.tot.abr.forEach((n, ak) => {
+    const parts = ak.split("|");
+    html += fila(ABR_NOMBRE[parts[0]][parts[1]] + " " + parts[2] + " (pza)", n,
+      { key: "abr|" + parts[0] + "|" + parts[1] + "|" + DIAM_CODE[parts[2]] });
+  });
+  d.tot.colg.forEach((n, diam) =>
+    html += fila("Colgador tipo pera " + diam + " (pza)", n, { key: "colgador|" + DIAM_CODE[diam] }));
+  d.uniTramos.forEach((n, medida) => {
+    html += fila(UNI_NOMBRE[medida] + " — " + fmt(r2(d.tot.uni.get(medida))) + " m → tramo 3 m (pza)",
+      n, { key: "uni|" + medida });
+  });
+  [...d.tot.esp.keys()].sort().forEach(dm => {
+    html += fila("Varilla roscada " + dm + " x 3 m (pza)", d.varillas.get(dm), { key: "varilla|" + dm }) +
+      fila("Taquete expansor Z " + dm + " (pza)", d.taqZ.get(dm), { key: "taqZ|" + dm }) +
+      fila("Tuerca hexagonal " + dm + " (pza)", d.tuercas.get(dm), { key: "tuerca|" + dm }) +
+      fila("Rondana plana " + dm + " (pza)", d.rondanas.get(dm), { key: "rondana|" + dm });
+  });
+  if (d.tot.anclasMuro) html += fila("Ancla a muro c/ tornillo (pza)", d.tot.anclasMuro, { key: "anclaMuro" });
+  if (d.tot.pijas) html += fila("Pijas (pza)", d.tot.pijas, { key: "pija" }) +
+    fila("Taquetes plásticos (pza)", d.tot.taquetes, { key: "taquete" });
+  if (d.cemento) html += fila("Cemento PVC 250 ml (bote)", d.cemento, { key: "cemento" });
+  html += "</tbody></table></div>";
+
+  html += '<p class="leyenda">Claves de syscom.mx: JUPITER (tubo y codo galvanizado), AMANCO WAVIN (PVC pesado), ' +
+    "ANCLO (conexiones y abrazaderas) y CHAROFIL 54 mm EZ. " +
+    "Nota: el tubo pared gruesa JUPITER ya incluye 1 cople por tubo. " +
+    "* = deducida del patrón de la serie · verde = clave asignada manualmente · " +
+    "«s/clave» = tócala para asignar el número de parte; queda guardado para futuros casos.</p>";
+
+  html += '<div class="totales">' +
+    '<div class="kpi"><b>' + fmt(r1(d.mConduit)) + "</b><span>m conduit</span></div>" +
+    '<div class="kpi"><b>' + fmt(d.tubosTot) + "</b><span>tubos</span></div>" +
+    '<div class="kpi"><b>' + fmt(r1(d.mCharola)) + "</b><span>m charola</span></div>" +
+    '<div class="kpi"><b>' + fmt(d.tramosChTot) + "</b><span>tramos charola</span></div></div>";
+
+  body.innerHTML = html;
+}
+function render(){ renderTramos(); renderTicket(); }
+
+/* =============== Exportaciones =============== */
+function textoCotizacion(){
+  const d = agrupar();
+  const partidas = partidasCotizacion(d);
+  const conClave = partidas.filter(x => x.clave);
+  const sinClave = partidas.filter(x => !x.clave);
+  let out = "COTIZACION SYSCOM - " + new Date().toLocaleDateString("es-MX") + "\n";
+  const obra = $("obra").value.trim();
+  if (obra) out += "Obra: " + obra + "\n";
+  out += "\nCLAVE\tCANTIDAD\tPARTIDA\n";
+  conClave.forEach(x => {
+    const marca = x.clave.custom ? " (manual)" : (x.clave.ok ? "" : " (*)");
+    out += x.clave.c + marca + "\t" + x.cant + "\t" + x.nombre + "\n";
+  });
+  if (sinClave.length){
+    out += "\nSIN CLAVE (asignar en la app o buscar por descripcion):\n";
+    sinClave.forEach(x => { out += "-\t" + x.cant + " " + x.unidad + "\t" + x.nombre + "\n"; });
+  }
+  out += "\n(*) clave deducida del patron: confirmar en syscom.mx\n";
+  return out;
+}
+function textoResumen(){
+  const d = agrupar();
+  let out = "LISTA DE MATERIAL - INSTALACION ELECTRICA\n";
+  const obra = $("obra").value.trim();
+  if (obra) out += "Obra: " + obra + "\n";
+  out += "Fecha: " + new Date().toLocaleDateString("es-MX") + "\n\n";
+  partidasCotizacion(d).forEach(x => {
+    out += "  " + x.nombre +
+      (x.clave ? " [" + x.clave.c + (x.clave.ok || x.clave.custom ? "" : "*") + "]" : "") +
+      ": " + x.cant + " " + x.unidad + "\n";
+  });
+  out += "\nSOPORTERIA POR AREA\n";
+  [...d.areas.keys()].sort().forEach(area => {
+    const sp = d.areas.get(area);
+    out += "· " + area + "\n";
+    sp.abr.forEach((n, ak) => {
+      const parts = ak.split("|");
+      out += "    " + ABR_NOMBRE[parts[0]][parts[1]] + " " + parts[2] + ": " + n + "\n";
+    });
+    sp.colg.forEach((n, diam) => out += "    Colgador pera " + diam + ": " + n + "\n");
+    sp.uni.forEach((m, medida) => out += "    " + UNI_NOMBRE[medida] + ": " + r2(m) + " m\n");
+    sp.esp.forEach((e, dm) => out += "    Esparragos " + dm + ": " + e.pzas + " pzas (" + r2(e.m) + " m)\n");
+    if (sp.anclasMuro) out += "    Anclas a muro: " + sp.anclasMuro + "\n";
+    if (sp.pijas) out += "    Pijas: " + sp.pijas + " | Taquetes: " + sp.taquetes + "\n";
+    if (sp.clemas) out += "    Kits clema: " + sp.clemas + " | Uniones: " + sp.unionesCh + "\n";
+  });
+  return out;
+}
+function descargarCSV(){
+  const d = agrupar();
+  const filas = [["Partida","Clave Syscom","Estado clave","Unidad","Cantidad"]];
+  partidasCotizacion(d).forEach(x => {
+    filas.push([x.nombre, x.clave ? x.clave.c : "",
+      x.clave ? (x.clave.custom ? "Manual" : (x.clave.ok ? "Verificada" : "Por confirmar"))
+              : "Sin clave", x.unidad, x.cant]);
+  });
+  filas.push([]);
+  filas.push(["SOPORTERIA POR AREA","","","",""]);
+  [...d.areas.keys()].sort().forEach(area => {
+    const sp = d.areas.get(area);
+    sp.abr.forEach((n, ak) => {
+      const parts = ak.split("|");
+      filas.push([area, ABR_NOMBRE[parts[0]][parts[1]] + " " + parts[2], "", "pza", n]);
+    });
+    sp.colg.forEach((n, diam) => filas.push([area, "Colgador pera " + diam, "", "pza", n]));
+    sp.uni.forEach((m, medida) => filas.push([area, UNI_NOMBRE[medida], "", "m", r2(m)]));
+    sp.esp.forEach((e, dm) => filas.push([area, "Esparragos " + dm, "", "pza", e.pzas]));
+    if (sp.anclasMuro) filas.push([area, "Anclas a muro", "", "pza", sp.anclasMuro]);
+    if (sp.pijas){ filas.push([area, "Pijas", "", "pza", sp.pijas]);
+      filas.push([area, "Taquetes plasticos", "", "pza", sp.taquetes]); }
+    if (sp.clemas){ filas.push([area, "Kits de clema", "", "pza", sp.clemas]);
+      filas.push([area, "Uniones rapidas", "", "pza", sp.unionesCh]); }
+  });
+  const csv = "\uFEFF" + filas.map(f => f.map(v =>
+    '"' + String(v ?? "").replace(/"/g,'""') + '"').join(",")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type:"text/csv;charset=utf-8" }));
+  a.download = "cotizacion-syscom.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* =============== Eventos =============== */
+$("tabC").addEventListener("click", () => setSistema("C"));
+$("tabCH").addEventListener("click", () => setSistema("CH"));
+$("tMontaje").addEventListener("change", refrescarSujecion);
+$("tSujecion").addEventListener("change", refrescarCamposC);
+$("cMontaje").addEventListener("change", refrescarCamposCH);
+$("btnAdd").addEventListener("click", agregarTramo);
+["tMetros","tSalidas","tCodos","cMetros"].forEach(id =>
+  $(id).addEventListener("keydown", e => { if (e.key === "Enter") agregarTramo(); }));
+["pDesp","pLargo","pSep","pEspC","pLargoCh","pSepCh","pUni","pClemas",
+ "pEspCh","pLargoUni","pLargoVar","obra"].forEach(id =>
+  $(id).addEventListener("input", renderTicket));
+$("ticketBody").addEventListener("click", e => {
+  const el = e.target.closest("[data-key]");
+  if (el) editarClave(el.dataset.key, el.dataset.nombre);
+});
+$("ticketBody").addEventListener("keydown", e => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const el = e.target.closest("[data-key]");
+  if (el){ e.preventDefault(); editarClave(el.dataset.key, el.dataset.nombre); }
+});
+$("btnCopiar").addEventListener("click", () => {
+  navigator.clipboard.writeText(textoResumen()).then(() => {
+    $("btnCopiar").textContent = "¡Copiada!";
+    setTimeout(() => $("btnCopiar").textContent = "Copiar lista", 1500);
+  });
+});
+$("btnCotizar").addEventListener("click", () => {
+  navigator.clipboard.writeText(textoCotizacion()).then(() => {
+    $("btnCotizar").textContent = "¡Copiada!";
+    setTimeout(() => $("btnCotizar").textContent = "Copiar p/ cotizar", 1500);
+  });
+});
+$("btnCSV").addEventListener("click", descargarCSV);
+$("btnPrint").addEventListener("click", () => window.print());
+$("btnLimpiar").addEventListener("click", () => {
+  if (tramos.length && confirm("¿Borrar todos los tramos capturados?")){
+    tramos = []; render();
+  }
+});
+$("btnExpCat").addEventListener("click", () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(OVR, null, 2)],
+    { type:"application/json" }));
+  a.download = "claves-syscom.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+$("btnImpCat").addEventListener("click", () => $("fileCat").click());
+$("fileCat").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = async () => {
+    try{
+      const data = JSON.parse(rd.result);
+      if (data && typeof data === "object" && !Array.isArray(data)){
+        OVR = Object.assign(OVR, data);
+        await store.save(OVR);
+        $("catStatus").textContent = "Claves importadas: " +
+          Object.keys(OVR).length + " personalizadas.";
+        render();
+      }
+    }catch(err){ $("catStatus").textContent = "El archivo no es un JSON de claves válido."; }
+  };
+  rd.readAsText(f);
+  e.target.value = "";
+});
+$("btnResetCat").addEventListener("click", async () => {
+  if (Object.keys(OVR).length &&
+      confirm("¿Borrar todas las claves personalizadas y volver a las originales?")){
+    OVR = {};
+    await store.save(OVR);
+    $("catStatus").textContent = "Claves restauradas a las originales.";
+    render();
+  }
+});
+
+/* =============== Inicio =============== */
+refrescarSujecion();
+refrescarCamposCH();
+render();
+(async () => {
+  OVR = await store.load();
+  const n = Object.keys(OVR).length;
+  if (n) $("catStatus").textContent = "Claves guardadas cargadas (" + n + " personalizadas).";
+  render();
+})();
+</script>
+</body>
+</html>
