@@ -43,6 +43,7 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
   .field{margin-bottom:10px}
+  .acc-row{display:grid;grid-template-columns:1fr 76px 34px;gap:6px;margin-bottom:6px;align-items:center}
   button{font:inherit;font-weight:700;cursor:pointer;border-radius:6px;
     padding:11px 16px;border:2px solid var(--ink)}
   .btn-main{width:100%;background:var(--accent);color:var(--accent-ink);
@@ -102,6 +103,9 @@
   .cl.na{background:#F4F1E4;color:#7A6A2F;border-color:#DBD2AC}
   .cl.custom{background:#E6F3E9;color:#1D5A31;border-color:#B4D9BE}
   .cl:hover{outline:2px solid var(--accent)}
+  .copy{background:none;border:none;padding:0 3px;margin-left:2px;cursor:pointer;
+    font-size:13px;line-height:1;color:var(--steel-dark);border-radius:3px;vertical-align:middle}
+  .copy:hover{color:var(--ink);outline:2px solid var(--accent)}
   .leyenda{font-size:11px;color:var(--muted);margin-top:8px}
   .pu{font-family:var(--mono);font-size:12px;background:#FFF6DA;color:#6B4E00;
     border:1px solid #E8D48A;border-radius:4px;padding:1px 6px;cursor:pointer;white-space:nowrap}
@@ -131,6 +135,7 @@
     .ticket{border:1px solid #000}
     .ticket::before{display:none}
     .cl{cursor:default}
+    .copy{display:none}
   }
 </style>
 </head>
@@ -257,7 +262,12 @@
           <div class="field"><label for="tCodos">Codos 90°</label>
             <input id="tCodos" type="number" step="1" min="0" placeholder="0" inputmode="numeric"></div>
         </div>
-        <p class="hint">Aérea con clip: colgador tipo pera + 1 espárrago por soporte. Aérea con unicanal: trapecio con 2 espárragos por soporte. Por pared con unicanal: se fija con 2 anclas por soporte. Uña = 1 pija/taquete por pieza, omega = 2.</p>
+        <div class="field">
+          <label>Registros y condulets (opcional)</label>
+          <div id="accList"></div>
+          <button type="button" class="btn-ghost" id="btnAddAcc" style="width:100%">+ Agregar registro / condulet</button>
+        </div>
+        <p class="hint">Aérea con clip: colgador tipo pera + 1 espárrago por soporte. Aérea con unicanal: trapecio con 2 espárragos por soporte. Por pared con unicanal: se fija con 2 anclas por soporte. Uña = 1 pija/taquete por pieza, omega = 2. El condulet toma el diámetro del tramo; el registro/caja es independiente del diámetro.</p>
       </div>
 
       <!-- Campos charofil -->
@@ -345,6 +355,31 @@ const ABR_NOMBRE = {
   clip:  { D:"Abrazadera clip p. delgada",     G:"Abrazadera clip p. gruesa/PVC" },
   strut: { D:"Abrazadera unicanal p. delgada", G:"Abrazadera unicanal p. gruesa/PVC" }
 };
+const REGISTROS = {
+  r232:  'Caja cuadrada galv. 4x4, prof. 2 1/8" (KO ½"–¾")',
+  r231:  'Caja cuadrada galv. 4x4, prof. 2 1/8" (entradas ¾")',
+  r233:  'Caja cuadrada galv. 4x4, prof. 2 1/8" (entradas 1", soldada)',
+  r260:  'Caja cuadrada galv. 4 11/16", prof. 3 1/4" (hasta 2")',
+  rT752: 'Tapa cuadrada ciega 4" galv.',
+  rT753: 'Tapa cuadrada 4" galv. c/ entrada ½"',
+  rP12:  'Caja cuadrada PVC pesado ½"',
+  rP34:  'Caja cuadrada PVC pesado ½"–¾"',
+  rP1:   'Caja cuadrada + tapa PVC pesado 1"',
+  rPT4:  'Tapa p/ caja cuadrada PVC pesado 4"'
+};
+const CONDULETS = { LB:"Condulet LB", LL:"Condulet LL", LR:"Condulet LR",
+  T:"Condulet T", C:"Condulet C", FS1:"Condulet FS 1 boca",
+  FS2:"Condulet FS 2 bocas", FS3:"Condulet FS 3 bocas" };
+const CONDULET_CLAVES = {
+  LB:  { "12":"OLB-2986C", "34":"OLB-0088C", "100":"OLB-0093C" },
+  LL:  { "12":"OLL-2987C", "100":"OLL-0094C" },
+  LR:  { "12":"OLR-2988C", "34":"OLR-0090C" },
+  T:   { "34":"OT-0087C" },
+  C:   {},
+  FS1: { "12":"RR-0505", "100":"RR-2631" },
+  FS2: { "12":"RR-0470", "34":"RR-0471", "100":"RR-2742" },
+  FS3: {}
+};
 /* Claves base de syscom.mx: ok=true vista en el sitio; ok=false deducida del patrón */
 const BASE = {};
 function def(key, c, ok){ BASE[key] = c ? { c, ok } : null; }
@@ -359,7 +394,7 @@ Object.values(DIAM_CODE).forEach(d => {
   def("tubo|PVC|" + d, "ATUP-" + d + "-TUB", ["34","114"].includes(d));
   def("codo|GD|" + d, "JU-PD-" + d + "-COD", d !== "34");
   def("codo|GG|" + d, "JU-PG-" + d + "-COD", ["12","100"].includes(d));
-  def("codo|PVC|" + d, "ATUP-" + d + "-COD", ["34","100","112","200"].includes(d));
+  def("codo|PVC|" + d, "ATUP-" + d + "-COD", ["12","34","100","112","200"].includes(d));
   def("cople|GD|" + d, "ANC-CPD" + d, ["34","100","114"].includes(d));
   def("cople|GG|" + d, "JU-PG-" + d + "-COP", ["12","100"].includes(d));
   def("cople|PVC|" + d, "ATUP-" + d + "-COP", d === "114");
@@ -371,7 +406,13 @@ Object.values(DIAM_CODE).forEach(d => {
   def("abr|strut|G|" + d, "ANC-AE-" + d, d === "100");
   ["contra|","colgador|","abr|una|G|","abr|omega|D|","abr|omega|G|",
    "abr|clip|D|","abr|clip|G|"].forEach(pfx => def(pfx + d, null, false));
+  Object.keys(CONDULETS).forEach(t =>
+    def("cond|" + t + "|" + d, CONDULET_CLAVES[t][d] || null, !!CONDULET_CLAVES[t][d]));
 });
+def("reg|r232", "HUB-232", true);  def("reg|r231", "HUB-231", true);
+def("reg|r233", "HUB-233", true);  def("reg|r260", "HUB-260", true);
+def("reg|rT752", "HUB-752", true); def("reg|rT753", "HUB-753", true);
+["rP12","rP34","rP1","rPT4"].forEach(r => def("reg|" + r, null, false));
 Object.values(ANCHO_CODE).forEach(a => {
   def("charola|" + a, "CH-54-" + a + "EZ", ["100","150"].includes(a));
   def("union|" + a, a === "300" ? "MG-51-110EZ" : "MG-67-112EZ", true);
@@ -534,6 +575,7 @@ function addEsp(m, dm, pzas, metros){
 function agrupar(){
   const p = leerParams();
   const gruposC = new Map(), gruposCh = new Map(), areas = new Map();
+  const regs = new Map(), conds = new Map();
   const tot = nuevoSop();
   let unionesPVC = 0, mConduit = 0, mCharola = 0, tubosTot = 0, tramosChTot = 0;
   const sopArea = area => {
@@ -552,6 +594,13 @@ function agrupar(){
       g.metros += t.metros; g.tubos += c.tubos; g.coples += c.coples;
       g.conectores += c.conectores; g.monitores += c.monitores;
       g.contras += c.contras; g.codos += c.codos;
+      (t.accs || []).forEach(a => {
+        if (a.k === "reg") regs.set(a.id, (regs.get(a.id) || 0) + a.cant);
+        else {
+          const ck = a.id + "|" + t.diam;
+          conds.set(ck, (conds.get(ck) || 0) + a.cant);
+        }
+      });
       const a = sopArea(t.area);
       [a, tot].forEach(sp => {
         if (c.abrKey){
@@ -592,7 +641,7 @@ function agrupar(){
   });
   return {
     gruposC: [...gruposC.values()], gruposCh: [...gruposCh.values()],
-    areas, tot, uniTramos, varillas, taqZ, tuercas, rondanas,
+    regs, conds, areas, tot, uniTramos, varillas, taqZ, tuercas, rondanas,
     cemento: unionesPVC > 0 ? Math.ceil(unionesPVC / 75) : 0,
     mConduit, mCharola, tubosTot, tramosChTot
   };
@@ -615,6 +664,11 @@ function partidasCotizacion(d){
       push("Contratuerca " + g.diam, "contra|" + dc, g.contras);
     }
     push("Codo 90° " + n, "codo|" + g.tipo + "|" + dc, g.codos);
+  });
+  d.regs.forEach((n, id) => push(REGISTROS[id], "reg|" + id, n));
+  d.conds.forEach((n, ck) => {
+    const p = ck.split("|");
+    push(CONDULETS[p[0]] + " " + p[1], "cond|" + p[0] + "|" + DIAM_CODE[p[1]], n);
   });
   d.gruposCh.forEach(g => {
     const a = ANCHO_CODE[g.ancho];
@@ -677,7 +731,18 @@ function agregarTramo(){
     const metros  = parseFloat($("tMetros").value)   || 0;
     const salidas = parseInt($("tSalidas").value,10) || 0;
     const codos   = parseInt($("tCodos").value,10)   || 0;
-    if (metros <= 0 && salidas <= 0 && codos <= 0){ $("tMetros").focus(); return; }
+    const accs = [];
+    $("accList").querySelectorAll(".acc-row").forEach(row => {
+      const v = row.querySelector("select").value;
+      const cant = parseInt(row.querySelector("input").value, 10) || 0;
+      if (v && cant > 0){
+        const p = v.split(":");
+        accs.push({ k: p[0], id: p[1], cant });
+      }
+    });
+    if (metros <= 0 && salidas <= 0 && codos <= 0 && !accs.length){
+      $("tMetros").focus(); return;
+    }
     tramos.push({
       id: Date.now() + Math.random(), sistema:"C",
       area: $("tArea").value.trim() || "Sin área",
@@ -686,9 +751,10 @@ function agregarTramo(){
       uniMedida: $("tUniMedida").value,
       uniLargo: Math.max(parseFloat($("tUniLargo").value) || 0.30, 0.05),
       espLargo: Math.max(parseFloat($("tEspLargo").value) || 0.40, 0.05),
-      metros, salidas, codos
+      metros, salidas, codos, accs
     });
     $("tMetros").value = ""; $("tSalidas").value = ""; $("tCodos").value = "";
+    $("accList").innerHTML = "";
   } else {
     const metros = parseFloat($("cMetros").value) || 0;
     if (metros <= 0){ $("cMetros").focus(); return; }
@@ -731,6 +797,8 @@ function renderTramos(){
       desc = '<span class="chip ' + t.tipo + '">' + t.tipo + "</span> " +
         TIPOS[t.tipo].nombre + " · " + t.diam + " · " + mont + " · " +
         SUJ_NOMBRE[t.sujecion] + " · " + t.salidas + " sal · " + t.codos + " codos";
+      const nAcc = (t.accs || []).reduce((a, x) => a + x.cant, 0);
+      if (nAcc) desc += " · " + nAcc + " reg/condulet";
     } else {
       desc = '<span class="chip CH">CH</span> Charofil ' + t.ancho + " · " + mont +
         " · " + UNI_NOMBRE[t.uniMedida];
@@ -758,7 +826,9 @@ function tagClave(key, nombre){
   if (!cv) return '<span class="cl na"' + attrs + ">s/clave ✎</span>";
   const cls = cv.custom ? "cl custom" : "cl";
   return '<span class="' + cls + '"' + attrs + ">" + esc(cv.c) +
-    (cv.ok || cv.custom ? "" : "*") + "</span>";
+    (cv.ok || cv.custom ? "" : "*") + "</span>" +
+    '<button type="button" class="copy" data-copy="' + esc(cv.c) +
+    '" title="Copiar número de parte" aria-label="Copiar clave ' + esc(cv.c) + '">⧉</button>';
 }
 function fila(nombre, cant, opts){
   const o = opts || {};
@@ -830,6 +900,15 @@ function renderTicket(){
           html += "</tbody></table></div>";
         });
     });
+  }
+  if (d.regs.size || d.conds.size){
+    html += '<div class="seccion">Registros y condulets</div><div class="grupo"><table class="mat"><tbody>';
+    d.regs.forEach((n, id) => html += fila(REGISTROS[id] + " (pza)", n, { key: "reg|" + id }));
+    d.conds.forEach((n, ck) => {
+      const p = ck.split("|");
+      html += fila(CONDULETS[p[0]] + " " + p[1] + " (pza)", n, { key: "cond|" + p[0] + "|" + DIAM_CODE[p[1]] });
+    });
+    html += "</tbody></table></div>";
   }
   if (d.gruposCh.length){
     html += '<div class="seccion">Escalerilla Charofil</div>';
@@ -909,7 +988,7 @@ function renderTicket(){
     (sinPrecio ? " <b>" + sinPrecio + " partida(s) sin precio</b> no suman al costo." : "") + "</p>";
 
   html += '<p class="leyenda">Claves de syscom.mx: JUPITER (tubo y codo galvanizado), AMANCO WAVIN (PVC pesado y cédula 40), ' +
-    "ANCLO (conexiones y abrazaderas) y CHAROFIL 54 mm EZ. " +
+    "ANCLO (conexiones y abrazaderas), RAWELT (condulets y cajas FS), RACO (cajas cuadradas) y CHAROFIL 54 mm EZ. " +
     "Nota: el tubo pared gruesa JUPITER ya incluye 1 cople por tubo. " +
     "* = deducida del patrón de la serie · verde = clave asignada manualmente · " +
     "«s/clave» = tócala para asignar el número de parte; queda guardado para futuros casos.</p>";
@@ -1054,6 +1133,14 @@ $("btnAdd").addEventListener("click", agregarTramo);
  "pEspCh","pLargoUni","pLargoVar","obra"].forEach(id =>
   $(id).addEventListener("input", renderTicket));
 $("ticketBody").addEventListener("click", e => {
+  const cb = e.target.closest("[data-copy]");
+  if (cb){
+    navigator.clipboard.writeText(cb.dataset.copy).then(() => {
+      cb.textContent = "✓";
+      setTimeout(() => { cb.textContent = "⧉"; }, 1200);
+    });
+    return;
+  }
   const p = e.target.closest("[data-pkey]");
   if (p){ editarPrecio(p.dataset.pkey, p.dataset.nombre); return; }
   const el = e.target.closest("[data-key]");
@@ -1144,6 +1231,36 @@ $("btnResetCat").addEventListener("click", async () => {
 });
 
 /* =============== Inicio =============== */
+function nuevaFilaAcc(){
+  const row = document.createElement("div");
+  row.className = "acc-row";
+  const sel = document.createElement("select");
+  const op = (v, txt, dest) => {
+    const o = document.createElement("option");
+    o.value = v; o.textContent = txt; (dest || sel).appendChild(o);
+  };
+  op("", "— Elegir registro o condulet —");
+  const g1 = document.createElement("optgroup");
+  g1.label = "Registros / cajas";
+  Object.keys(REGISTROS).forEach(id => op("reg:" + id, REGISTROS[id], g1));
+  sel.appendChild(g1);
+  const g2 = document.createElement("optgroup");
+  g2.label = "Condulets (del Ø del tramo)";
+  Object.keys(CONDULETS).forEach(id => op("cond:" + id, CONDULETS[id], g2));
+  sel.appendChild(g2);
+  const cant = document.createElement("input");
+  cant.type = "number"; cant.min = "1"; cant.step = "1";
+  cant.placeholder = "Cant."; cant.inputMode = "numeric";
+  const del = document.createElement("button");
+  del.type = "button"; del.className = "btn-danger";
+  del.setAttribute("aria-label", "Quitar renglón");
+  del.textContent = "✕";
+  del.addEventListener("click", () => row.remove());
+  row.appendChild(sel); row.appendChild(cant); row.appendChild(del);
+  $("accList").appendChild(row);
+  sel.focus();
+}
+$("btnAddAcc").addEventListener("click", nuevaFilaAcc);
 refrescarSujecion();
 refrescarCamposCH();
 render();
