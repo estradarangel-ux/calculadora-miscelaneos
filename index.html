@@ -67,6 +67,7 @@
     border-radius:99px;color:#fff;text-transform:uppercase;letter-spacing:.03em}
   .chip.GD{background:var(--steel)} .chip.GG{background:var(--steel-dark)}
   .chip.PVC{background:var(--pvc)} .chip.CH{background:var(--tray)}
+  .chip.C40{background:#6C55B8}
   .tramo{display:flex;justify-content:space-between;align-items:center;gap:10px;
     border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:#FAFBFC}
   .tramo .info{min-width:0}
@@ -102,6 +103,18 @@
   .cl.custom{background:#E6F3E9;color:#1D5A31;border-color:#B4D9BE}
   .cl:hover{outline:2px solid var(--accent)}
   .leyenda{font-size:11px;color:var(--muted);margin-top:8px}
+  .pu{font-family:var(--mono);font-size:12px;background:#FFF6DA;color:#6B4E00;
+    border:1px solid #E8D48A;border-radius:4px;padding:1px 6px;cursor:pointer;white-space:nowrap}
+  .pu.vacio{background:#F1F3F5;color:var(--muted);border-color:var(--line)}
+  .pu:hover{outline:2px solid var(--accent)}
+  table.cot{width:100%;border-collapse:collapse;font-size:13px}
+  table.cot th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--muted);text-align:left;padding:2px;border-bottom:2px solid var(--ink)}
+  table.cot td{padding:4px 2px;border-bottom:1px dotted var(--line)}
+  table.cot td:nth-child(2),table.cot th:nth-child(2),
+  table.cot td:nth-child(4),table.cot th:nth-child(4){text-align:right;font-family:var(--mono)}
+  table.cot td:nth-child(4){font-weight:700}
+  tr.cot-tot td{border-top:2px solid var(--ink);border-bottom:none;font-weight:700}
   .misc{background:#F6F8F9;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:8px}
   .totales{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
   .kpi{flex:1;min-width:105px;border:2px solid var(--ink);border-radius:8px;
@@ -126,7 +139,7 @@
   <header>
     <span class="logo">Conduit + Charofil</span>
     <h1>Calculadora de material eléctrico</h1>
-    <p>Conduit (galvanizada delgada / gruesa / PVC, ½"–2") y escalerilla Charofil (50–300 mm). Captura por área con montaje aéreo o por pared, soportería desglosada por área y claves de syscom.mx editables que se guardan para futuros casos.</p>
+    <p>Conduit (galvanizada delgada / gruesa / PVC, ½"–2") y escalerilla Charofil (50–300 mm). Captura por área con montaje aéreo o por pared, soportería desglosada por área, y claves y precios de syscom.mx editables que se guardan para futuros casos, con costo estimado de compra.</p>
   </header>
 
   <div class="layout">
@@ -175,10 +188,10 @@
             <input id="pLargoVar" type="number" step="0.5" min="1" value="3"></div>
         </div>
         <h5>Catálogo de claves Syscom</h5>
-        <p class="hint" style="margin-top:0">Toca cualquier clave del vale para corregirla, o asígnala donde diga «s/clave». Los cambios se guardan en este dispositivo y se reutilizan en futuros casos. Compártelos con tu cuadrilla exportando el archivo de claves.</p>
+        <p class="hint" style="margin-top:0">Toca cualquier clave del vale para corregirla o asignarla, y toca cualquier precio de la tabla de costos para capturarlo. Claves y precios se guardan en este dispositivo y se reutilizan en futuros casos. Compártelos con tu cuadrilla exportando el catálogo.</p>
         <div class="acciones" style="margin-top:8px">
-          <button class="btn-ghost" type="button" id="btnExpCat">Exportar claves</button>
-          <button class="btn-ghost" type="button" id="btnImpCat">Importar claves</button>
+          <button class="btn-ghost" type="button" id="btnExpCat">Exportar catálogo</button>
+          <button class="btn-ghost" type="button" id="btnImpCat">Importar catálogo</button>
           <button class="btn-ghost" type="button" id="btnResetCat" style="color:var(--danger)">Restaurar originales</button>
           <input type="file" id="fileCat" accept="application/json" hidden>
         </div>
@@ -202,7 +215,8 @@
             <select id="tTipo">
               <option value="GD">Galvanizada pared delgada</option>
               <option value="GG">Galvanizada pared gruesa</option>
-              <option value="PVC">PVC conduit</option>
+              <option value="PVC">PVC conduit pesado</option>
+              <option value="C40">PVC cédula 40</option>
             </select></div>
           <div class="field"><label for="tDiam">Diámetro</label>
             <select id="tDiam">
@@ -303,7 +317,7 @@
         <button class="btn-ghost" type="button" id="btnPrint">Imprimir / PDF</button>
         <button class="btn-ghost" type="button" id="btnLimpiar" style="color:var(--danger)">Borrar todo</button>
       </div>
-      <p class="nota no-print">Los tramos capturados viven solo en esta sesión (descarga el CSV o imprime antes de cerrar); las claves editadas sí se guardan en el dispositivo. Cantidades estimadas: verificar contra plano y existencias.</p>
+      <p class="nota no-print">Los tramos capturados viven solo en esta sesión (descarga el CSV o imprime antes de cerrar); las claves y los precios capturados sí se guardan en el dispositivo. Cantidades estimadas: verificar contra plano y existencias.</p>
     </section>
   </div>
 </div>
@@ -314,7 +328,8 @@
 const TIPOS = {
   GD:  { nombre:"Galvanizada pared delgada", conexion:"Conector pared delgada" },
   GG:  { nombre:"Galvanizada pared gruesa",  conexion:"Monitor + contra" },
-  PVC: { nombre:"PVC conduit",               conexion:"Adaptador terminal PVC" }
+  PVC: { nombre:"PVC conduit pesado",        conexion:"Adaptador terminal PVC" },
+  C40: { nombre:"PVC cédula 40",             conexion:"Conector cédula 40" }
 };
 const DIAM_CODE = { '½" (13 mm)':"12", '¾" (19 mm)':"34", '1" (25 mm)':"100",
                     '1¼" (32 mm)':"114", '1½" (38 mm)':"112", '2" (51 mm)':"200" };
@@ -334,6 +349,11 @@ const ABR_NOMBRE = {
 const BASE = {};
 function def(key, c, ok){ BASE[key] = c ? { c, ok } : null; }
 Object.values(DIAM_CODE).forEach(d => {
+  const c40 = d === "100" ? "1" : d === "200" ? "2" : d;
+  def("tubo|C40|" + d, "ATC40-" + c40 + "-TUB", true);
+  def("codo|C40|" + d, "ATC40-CUR-" + c40, true);
+  def("cople|C40|" + d, "ATC40-COP-" + c40, d !== "200");
+  def("conector|C40|" + d, "ATC40-CON-" + c40, true);
   def("tubo|GD|" + d, "JU-PD-" + d + "-TUB", true);
   def("tubo|GG|" + d, "JU-PG-" + d + "-TUB", true);
   def("tubo|PVC|" + d, "ATUP-" + d + "-TUB", ["34","114"].includes(d));
@@ -369,28 +389,30 @@ def('taqZ|3/8"', "ANC-Z38", false);
  "anclaMuro","pija","taquete","cemento"].forEach(k => def(k, null, false));
 
 /* =============== Claves editables con guardado =============== */
-let OVR = {};   // { key: clave manual }
+let OVR = {};      // { key: clave manual }
+let PRECIOS = {};  // { key: precio unitario MXN sin IVA }
+let cfgIVA = { on:false, tasa:16 };
 const store = {
-  async load(){
+  async load(clave){
     try{
       if (window.storage){
-        const r = await window.storage.get("claves-syscom");
+        const r = await window.storage.get(clave);
         if (r && r.value) return JSON.parse(r.value);
       }
     }catch(e){}
     try{
-      const v = window.localStorage && localStorage.getItem("claves-syscom");
+      const v = window.localStorage && localStorage.getItem(clave);
       if (v) return JSON.parse(v);
     }catch(e){}
     return {};
   },
-  async save(o){
+  async save(clave, o){
     let ok = false;
     try{
-      if (window.storage){ await window.storage.set("claves-syscom", JSON.stringify(o)); ok = true; }
+      if (window.storage){ await window.storage.set(clave, JSON.stringify(o)); ok = true; }
     }catch(e){}
     if (!ok){
-      try{ localStorage.setItem("claves-syscom", JSON.stringify(o)); ok = true; }catch(e){}
+      try{ localStorage.setItem(clave, JSON.stringify(o)); ok = true; }catch(e){}
     }
     return ok;
   }
@@ -407,10 +429,29 @@ async function editarClave(key, nombre){
   if (v === null) return;
   const limpio = v.trim();
   if (limpio) OVR[key] = limpio; else delete OVR[key];
-  const guardado = await store.save(OVR);
+  const guardado = await store.save("claves-syscom", OVR);
   $("catStatus").textContent = guardado
     ? "Claves guardadas en este dispositivo (" + Object.keys(OVR).length + " personalizadas)."
     : "Sin almacenamiento disponible: exporta las claves para no perderlas.";
+  render();
+}
+
+const money = n => n.toLocaleString("es-MX", { style:"currency", currency:"MXN" });
+function getPrecio(key){
+  const v = PRECIOS[key];
+  return typeof v === "number" && v > 0 ? v : null;
+}
+async function editarPrecio(key, nombre){
+  const actual = getPrecio(key);
+  const v = prompt("Precio unitario en MXN (sin IVA) para:\n" + nombre +
+    "\n\n(Deja vacío para quitar el precio)", actual != null ? String(actual) : "");
+  if (v === null) return;
+  const num = parseFloat(v.replace(/[$,\s]/g, ""));
+  if (num > 0) PRECIOS[key] = Math.round(num * 100) / 100; else delete PRECIOS[key];
+  const guardado = await store.save("precios-syscom", PRECIOS);
+  $("catStatus").textContent = guardado
+    ? "Precios guardados en este dispositivo (" + Object.keys(PRECIOS).length + " partidas con precio)."
+    : "Sin almacenamiento disponible: exporta el catálogo para no perderlo.";
   render();
 }
 
@@ -523,7 +564,7 @@ function agrupar(){
         sp.anclasMuro += c.anclasMuro; sp.pijas += c.pijas; sp.taquetes += c.taquetes;
       });
       mConduit += t.metros; tubosTot += c.tubos;
-      if (t.tipo === "PVC") unionesPVC += c.coples + c.conectores + c.codos;
+      if (t.tipo === "PVC" || t.tipo === "C40") unionesPVC += c.coples + c.conectores + c.codos;
     } else {
       const c = calcCharofil(t, p);
       if (!gruposCh.has(t.ancho)) gruposCh.set(t.ancho,
@@ -769,7 +810,7 @@ function renderTicket(){
 
   if (d.gruposC.length){
     html += '<div class="seccion">Tubería conduit</div>';
-    ["GD","GG","PVC"].forEach(tipo => {
+    ["GD","GG","PVC","C40"].forEach(tipo => {
       d.gruposC.filter(g => g.tipo === tipo)
         .sort((a,b) => a.diam.localeCompare(b.diam, "es"))
         .forEach(g => {
@@ -838,7 +879,36 @@ function renderTicket(){
   if (d.cemento) html += fila("Cemento PVC 250 ml (bote)", d.cemento, { key: "cemento" });
   html += "</tbody></table></div>";
 
-  html += '<p class="leyenda">Claves de syscom.mx: JUPITER (tubo y codo galvanizado), AMANCO WAVIN (PVC pesado), ' +
+  const partidas = partidasCotizacion(d);
+  let sub = 0, sinPrecio = 0, filasC = "";
+  partidas.forEach(x => {
+    const pu = getPrecio(x.key);
+    const imp = pu != null ? pu * x.cant : 0;
+    sub += imp; if (pu == null) sinPrecio++;
+    filasC += "<tr><td>" + x.nombre + tagClave(x.key, x.nombre) + "</td><td>" + fmt(x.cant) +
+      '</td><td><span class="pu' + (pu == null ? " vacio" : "") +
+      '" role="button" tabindex="0" data-pkey="' + esc(x.key) + '" data-nombre="' + esc(x.nombre) +
+      '" title="Toca para capturar o corregir el precio">' + (pu == null ? "$ —" : money(pu)) +
+      "</span></td><td>" + (pu == null ? "—" : money(imp)) + "</td></tr>";
+  });
+  const iva = cfgIVA.on ? sub * cfgIVA.tasa / 100 : 0;
+  html += '<div class="seccion">Costo estimado de compra</div>' +
+    '<table class="cot"><thead><tr><th>Partida</th><th>Cant</th><th>P.U.</th><th>Importe</th></tr></thead><tbody>' +
+    filasC +
+    '<tr class="cot-tot"><td colspan="3">Subtotal' + (cfgIVA.on ? " (sin IVA)" : "") + "</td><td>" + money(sub) + "</td></tr>" +
+    (cfgIVA.on
+      ? '<tr class="cot-tot"><td colspan="3">IVA ' + cfgIVA.tasa + "%</td><td>" + money(iva) + "</td></tr>" +
+        '<tr class="cot-tot"><td colspan="3">TOTAL</td><td>' + money(sub + iva) + "</td></tr>"
+      : "") +
+    "</tbody></table>" +
+    '<p class="hint" style="margin-top:6px"><label style="display:inline;font-size:12px;text-transform:none;letter-spacing:0;color:var(--ink)">' +
+    '<input type="checkbox" id="ivaChk" style="width:auto;margin-right:5px"' + (cfgIVA.on ? " checked" : "") + ">Agregar IVA</label> " +
+    '<input id="ivaTasa" type="number" min="0" max="30" step="0.5" value="' + cfgIVA.tasa +
+    '" style="width:64px;padding:3px 6px;display:inline-block"> % · ' +
+    "Toca un precio para capturarlo desde tu cotización de Syscom; queda guardado para futuros casos." +
+    (sinPrecio ? " <b>" + sinPrecio + " partida(s) sin precio</b> no suman al costo." : "") + "</p>";
+
+  html += '<p class="leyenda">Claves de syscom.mx: JUPITER (tubo y codo galvanizado), AMANCO WAVIN (PVC pesado y cédula 40), ' +
     "ANCLO (conexiones y abrazaderas) y CHAROFIL 54 mm EZ. " +
     "Nota: el tubo pared gruesa JUPITER ya incluye 1 cople por tubo. " +
     "* = deducida del patrón de la serie · verde = clave asignada manualmente · " +
@@ -863,16 +933,29 @@ function textoCotizacion(){
   let out = "COTIZACION SYSCOM - " + new Date().toLocaleDateString("es-MX") + "\n";
   const obra = $("obra").value.trim();
   if (obra) out += "Obra: " + obra + "\n";
-  out += "\nCLAVE\tCANTIDAD\tPARTIDA\n";
+  let sub = 0, sinPrecio = 0;
+  const linPrecio = x => {
+    const pu = getPrecio(x.key);
+    if (pu == null){ sinPrecio++; return "-\t-"; }
+    sub += pu * x.cant;
+    return pu.toFixed(2) + "\t" + (pu * x.cant).toFixed(2);
+  };
+  out += "\nCLAVE\tCANTIDAD\tP.UNIT\tIMPORTE\tPARTIDA\n";
   conClave.forEach(x => {
     const marca = x.clave.custom ? " (manual)" : (x.clave.ok ? "" : " (*)");
-    out += x.clave.c + marca + "\t" + x.cant + "\t" + x.nombre + "\n";
+    out += x.clave.c + marca + "\t" + x.cant + "\t" + linPrecio(x) + "\t" + x.nombre + "\n";
   });
   if (sinClave.length){
     out += "\nSIN CLAVE (asignar en la app o buscar por descripcion):\n";
-    sinClave.forEach(x => { out += "-\t" + x.cant + " " + x.unidad + "\t" + x.nombre + "\n"; });
+    sinClave.forEach(x => { out += "-\t" + x.cant + " " + x.unidad + "\t" + linPrecio(x) + "\t" + x.nombre + "\n"; });
   }
-  out += "\n(*) clave deducida del patron: confirmar en syscom.mx\n";
+  out += "\nSUBTOTAL (sin IVA): $" + sub.toFixed(2) + " MXN\n";
+  if (cfgIVA.on){
+    out += "IVA " + cfgIVA.tasa + "%: $" + (sub * cfgIVA.tasa / 100).toFixed(2) + " MXN\n";
+    out += "TOTAL: $" + (sub * (1 + cfgIVA.tasa / 100)).toFixed(2) + " MXN\n";
+  }
+  if (sinPrecio) out += "(" + sinPrecio + " partidas sin precio capturado no suman al costo)\n";
+  out += "(*) clave deducida del patron: confirmar en syscom.mx\n";
   return out;
 }
 function textoResumen(){
@@ -901,16 +984,37 @@ function textoResumen(){
     if (sp.pijas) out += "    Pijas: " + sp.pijas + " | Taquetes: " + sp.taquetes + "\n";
     if (sp.clemas) out += "    Kits clema: " + sp.clemas + " | Uniones: " + sp.unionesCh + "\n";
   });
+  let sub = 0, sinPrecio = 0;
+  partidasCotizacion(d).forEach(x => {
+    const pu = getPrecio(x.key);
+    if (pu == null) sinPrecio++; else sub += pu * x.cant;
+  });
+  if (sub > 0 || sinPrecio){
+    out += "\nCOSTO ESTIMADO (sin IVA): $" + sub.toFixed(2) + " MXN";
+    if (cfgIVA.on) out += " | Con IVA " + cfgIVA.tasa + "%: $" + (sub * (1 + cfgIVA.tasa / 100)).toFixed(2) + " MXN";
+    if (sinPrecio) out += " | " + sinPrecio + " partidas sin precio";
+    out += "\n";
+  }
   return out;
 }
 function descargarCSV(){
   const d = agrupar();
-  const filas = [["Partida","Clave Syscom","Estado clave","Unidad","Cantidad"]];
+  const filas = [["Partida","Clave Syscom","Estado clave","Unidad","Cantidad","P.U. MXN sin IVA","Importe MXN"]];
+  let sub = 0, sinPrecio = 0;
   partidasCotizacion(d).forEach(x => {
+    const pu = getPrecio(x.key);
+    if (pu == null) sinPrecio++; else sub += pu * x.cant;
     filas.push([x.nombre, x.clave ? x.clave.c : "",
       x.clave ? (x.clave.custom ? "Manual" : (x.clave.ok ? "Verificada" : "Por confirmar"))
-              : "Sin clave", x.unidad, x.cant]);
+              : "Sin clave", x.unidad, x.cant,
+      pu == null ? "" : pu.toFixed(2), pu == null ? "" : (pu * x.cant).toFixed(2)]);
   });
+  filas.push(["SUBTOTAL (sin IVA)","","","","","", sub.toFixed(2)]);
+  if (cfgIVA.on){
+    filas.push(["IVA " + cfgIVA.tasa + "%","","","","","", (sub * cfgIVA.tasa / 100).toFixed(2)]);
+    filas.push(["TOTAL","","","","","", (sub * (1 + cfgIVA.tasa / 100)).toFixed(2)]);
+  }
+  if (sinPrecio) filas.push(["Partidas sin precio (no suman)","","","","", sinPrecio, ""]);
   filas.push([]);
   filas.push(["SOPORTERIA POR AREA","","","",""]);
   [...d.areas.keys()].sort().forEach(area => {
@@ -950,13 +1054,24 @@ $("btnAdd").addEventListener("click", agregarTramo);
  "pEspCh","pLargoUni","pLargoVar","obra"].forEach(id =>
   $(id).addEventListener("input", renderTicket));
 $("ticketBody").addEventListener("click", e => {
+  const p = e.target.closest("[data-pkey]");
+  if (p){ editarPrecio(p.dataset.pkey, p.dataset.nombre); return; }
   const el = e.target.closest("[data-key]");
   if (el) editarClave(el.dataset.key, el.dataset.nombre);
 });
 $("ticketBody").addEventListener("keydown", e => {
   if (e.key !== "Enter" && e.key !== " ") return;
+  const p = e.target.closest("[data-pkey]");
+  if (p){ e.preventDefault(); editarPrecio(p.dataset.pkey, p.dataset.nombre); return; }
   const el = e.target.closest("[data-key]");
   if (el){ e.preventDefault(); editarClave(el.dataset.key, el.dataset.nombre); }
+});
+$("ticketBody").addEventListener("change", e => {
+  if (e.target.id === "ivaChk"){ cfgIVA.on = e.target.checked; renderTicket(); }
+  else if (e.target.id === "ivaTasa"){
+    cfgIVA.tasa = Math.min(Math.max(parseFloat(e.target.value) || 0, 0), 50);
+    renderTicket();
+  }
 });
 $("btnCopiar").addEventListener("click", () => {
   navigator.clipboard.writeText(textoResumen()).then(() => {
@@ -979,9 +1094,10 @@ $("btnLimpiar").addEventListener("click", () => {
 });
 $("btnExpCat").addEventListener("click", () => {
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(OVR, null, 2)],
+  a.href = URL.createObjectURL(new Blob(
+    [JSON.stringify({ claves: OVR, precios: PRECIOS }, null, 2)],
     { type:"application/json" }));
-  a.download = "claves-syscom.json";
+  a.download = "catalogo-syscom.json";
   a.click();
   URL.revokeObjectURL(a.href);
 });
@@ -994,23 +1110,35 @@ $("fileCat").addEventListener("change", e => {
     try{
       const data = JSON.parse(rd.result);
       if (data && typeof data === "object" && !Array.isArray(data)){
-        OVR = Object.assign(OVR, data);
-        await store.save(OVR);
-        $("catStatus").textContent = "Claves importadas: " +
-          Object.keys(OVR).length + " personalizadas.";
+        if (data.claves || data.precios){
+          if (data.claves && typeof data.claves === "object") Object.assign(OVR, data.claves);
+          if (data.precios && typeof data.precios === "object"){
+            Object.keys(data.precios).forEach(k => {
+              const v = parseFloat(data.precios[k]);
+              if (v > 0) PRECIOS[k] = Math.round(v * 100) / 100;
+            });
+          }
+        } else {
+          Object.assign(OVR, data); // formato viejo: solo claves
+        }
+        await store.save("claves-syscom", OVR);
+        await store.save("precios-syscom", PRECIOS);
+        $("catStatus").textContent = "Catálogo importado: " + Object.keys(OVR).length +
+          " claves y " + Object.keys(PRECIOS).length + " precios personalizados.";
         render();
       }
-    }catch(err){ $("catStatus").textContent = "El archivo no es un JSON de claves válido."; }
+    }catch(err){ $("catStatus").textContent = "El archivo no es un JSON de catálogo válido."; }
   };
   rd.readAsText(f);
   e.target.value = "";
 });
 $("btnResetCat").addEventListener("click", async () => {
-  if (Object.keys(OVR).length &&
-      confirm("¿Borrar todas las claves personalizadas y volver a las originales?")){
-    OVR = {};
-    await store.save(OVR);
-    $("catStatus").textContent = "Claves restauradas a las originales.";
+  if ((Object.keys(OVR).length || Object.keys(PRECIOS).length) &&
+      confirm("¿Borrar todas las claves y precios personalizados y volver a los originales?")){
+    OVR = {}; PRECIOS = {};
+    await store.save("claves-syscom", OVR);
+    await store.save("precios-syscom", PRECIOS);
+    $("catStatus").textContent = "Catálogo restaurado (sin claves ni precios personalizados).";
     render();
   }
 });
@@ -1020,9 +1148,11 @@ refrescarSujecion();
 refrescarCamposCH();
 render();
 (async () => {
-  OVR = await store.load();
-  const n = Object.keys(OVR).length;
-  if (n) $("catStatus").textContent = "Claves guardadas cargadas (" + n + " personalizadas).";
+  OVR = await store.load("claves-syscom") || {};
+  PRECIOS = await store.load("precios-syscom") || {};
+  const n = Object.keys(OVR).length, m = Object.keys(PRECIOS).length;
+  if (n || m) $("catStatus").textContent =
+    "Catálogo cargado: " + n + " claves y " + m + " precios personalizados.";
   render();
 })();
 </script>
