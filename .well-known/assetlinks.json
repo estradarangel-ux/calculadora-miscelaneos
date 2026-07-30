@@ -1,1 +1,8 @@
-.well-known/assetlinks.json
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.siticomunicaciones.calculadora.twa",
+        "sha256_cert_fingerprints": ["93:52:00:24:58:89:41:7B:0C:48:4A:63:D4:CB:3F:44:A9:1D:CC:B9:6A:28:2A:F2:8B:2E:42:04:CD:FB:F8:6F"]
+      }
+    }]
