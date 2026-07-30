@@ -7,9 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#EDEFF1; --panel:#FFFFFF; --ink:#171C21; --muted:#5C6A76;
-    --line:#C9D1D8; --accent:#FFC400; --accent-ink:#171C21;
-    --steel:#8A97A3; --steel-dark:#46545F; --pvc:#1D7A4A; --tray:#3E6B8C;
+    --bg:#FFFFFF; --panel:#F9FAFC; --ink:#0A2540; --muted:#636669;
+    --line:#D7E0EA; --accent:#5AAD4F; --accent-dark:#3F8A37; --accent-ink:#0A2540;
+    --blue:#3182D0; --sky:#65B4EA; --pale:#ACCDEC; --box:#EFF6FF;
+    --steel:#8FA3B8; --steel-dark:#3D5166; --pvc:#0E7C66; --tray:#3182D0;
     --danger:#B3261E; --radius:10px;
     --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
     --disp:"Saira Condensed","Arial Narrow",Arial,sans-serif;
@@ -19,27 +20,30 @@
   body{background:var(--bg);color:var(--ink);
     font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding:16px}
   .wrap{max-width:1080px;margin:0 auto}
-  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-    border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:18px}
-  .logo{background:var(--accent);color:var(--accent-ink);font-family:var(--disp);
-    font-weight:700;font-size:22px;letter-spacing:.06em;padding:6px 12px;
-    border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);text-transform:uppercase}
+  header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    background:var(--ink);border-radius:var(--radius);padding:16px 20px;
+    margin-bottom:18px;border-bottom:4px solid var(--blue)}
+  .brand{height:66px;width:auto;display:block}
+  .brand-tit{min-width:220px;flex:1}
   header h1{font-family:var(--disp);font-weight:700;text-transform:uppercase;
-    letter-spacing:.04em;font-size:24px;margin:0}
-  header p{margin:0;color:var(--muted);font-size:13px;flex-basis:100%}
+    letter-spacing:.04em;font-size:24px;margin:0;color:#fff}
+  .brand-slogan{display:block;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--sky);margin-top:2px}
+  header p{margin:6px 0 0;color:var(--pale);font-size:13px;flex-basis:100%}
   .layout{display:grid;gap:18px}
   @media(min-width:940px){.layout{grid-template-columns:1fr 1fr;align-items:start}}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
   .card h2{font-family:var(--disp);font-weight:700;text-transform:uppercase;
-    letter-spacing:.05em;font-size:17px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
-  .card h2::before{content:"";width:10px;height:10px;background:var(--accent);
-    border:2px solid var(--ink);display:inline-block}
+    letter-spacing:.05em;font-size:17px;margin:0 0 12px;display:flex;align-items:center;gap:8px;
+    border-bottom:2px solid var(--blue);padding-bottom:7px}
+  .card h2::before{content:"";width:14px;height:14px;background:var(--pale);
+    border-radius:0 100% 0 0;display:inline-block}
   label{display:block;font-size:12px;font-weight:600;color:var(--muted);
     text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
   input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;
-    font:inherit;background:#FAFBFC;color:var(--ink)}
+    font:inherit;background:#FFFFFF;color:var(--ink)}
   input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible,
-  .cl:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+  .cl:focus-visible{outline:3px solid var(--blue);outline-offset:1px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
   .field{margin-bottom:10px}
@@ -47,14 +51,14 @@
   button{font:inherit;font-weight:700;cursor:pointer;border-radius:6px;
     padding:11px 16px;border:2px solid var(--ink)}
   .btn-main{width:100%;background:var(--accent);color:var(--accent-ink);
-    text-transform:uppercase;letter-spacing:.05em;font-family:var(--disp);
-    font-size:17px;box-shadow:3px 3px 0 var(--ink)}
+    border-color:var(--accent-dark);text-transform:uppercase;letter-spacing:.05em;
+    font-family:var(--disp);font-size:17px;box-shadow:3px 3px 0 var(--ink)}
   .btn-main:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
   .btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line);
     font-weight:600;padding:8px 12px;font-size:13px}
   .btn-danger{background:none;border:none;color:var(--danger);font-size:18px;padding:4px 8px;line-height:1}
-  details.params{border:1px dashed var(--steel);border-radius:8px;
-    padding:10px 12px;margin-bottom:14px;background:#F6F8F9}
+  details.params{border:1px dashed var(--pale);border-radius:8px;
+    padding:10px 12px;margin-bottom:14px;background:var(--box)}
   details.params summary{cursor:pointer;font-weight:700;font-size:13px;
     text-transform:uppercase;letter-spacing:.05em;color:var(--steel-dark)}
   .params h5{margin:12px 0 6px;font-size:11px;text-transform:uppercase;
@@ -63,14 +67,15 @@
   .sistema{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
   .sistema button{background:#fff;border:2px solid var(--line);color:var(--muted);
     font-family:var(--disp);text-transform:uppercase;letter-spacing:.04em;font-size:15px;padding:9px 6px}
-  .sistema button.on{border-color:var(--ink);background:var(--ink);color:#fff}
+  .sistema button.on{border-color:var(--ink);background:var(--ink);color:#fff;
+    box-shadow:inset 0 -3px 0 var(--accent)}
   .chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;
     border-radius:99px;color:#fff;text-transform:uppercase;letter-spacing:.03em}
   .chip.GD{background:var(--steel)} .chip.GG{background:var(--steel-dark)}
   .chip.PVC{background:var(--pvc)} .chip.CH{background:var(--tray)}
   .chip.C40{background:#6C55B8}
   .tramo{display:flex;justify-content:space-between;align-items:center;gap:10px;
-    border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:#FAFBFC}
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:#FFFFFF}
   .tramo .info{min-width:0}
   .tramo .info strong{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .tramo .info span{font-size:12px;color:var(--muted)}
@@ -80,10 +85,11 @@
   .ticket{background:#fff;border:1px solid var(--line);border-top:none;
     border-radius:0 0 var(--radius) var(--radius);padding:18px 18px 22px;position:relative;margin-top:12px}
   .ticket::before{content:"";position:absolute;top:-7px;left:0;right:0;height:14px;
-    background:radial-gradient(circle at 8px 7px,var(--bg) 5px,#fff 5.5px);
+    background:radial-gradient(circle at 8px 7px,var(--panel) 5px,#fff 5.5px);
     background-size:17px 14px;background-repeat:repeat-x}
-  .ticket-head{display:flex;justify-content:space-between;align-items:baseline;
+  .ticket-head{display:flex;justify-content:space-between;align-items:center;
     border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+  .vale-logo{height:44px;width:auto}
   .ticket-head h3{font-family:var(--disp);text-transform:uppercase;letter-spacing:.06em;font-size:19px;margin:0}
   .ticket-head .folio{font-family:var(--mono);font-size:12px;color:var(--muted)}
   .seccion{font-family:var(--disp);text-transform:uppercase;letter-spacing:.06em;
@@ -97,20 +103,20 @@
   table.mat{width:100%;border-collapse:collapse;font-size:14px}
   table.mat td{padding:4px 0;border-bottom:1px dotted var(--line)}
   table.mat td:last-child{text-align:right;font-family:var(--mono);font-weight:700}
-  .cl{font-family:var(--mono);font-size:11px;background:#EDF3F8;color:#2C4A63;
-    border:1px solid #C5D6E4;border-radius:4px;padding:1px 5px;margin-left:6px;
+  .cl{font-family:var(--mono);font-size:11px;background:var(--box);color:var(--ink);
+    border:1px solid var(--pale);border-radius:4px;padding:1px 5px;margin-left:6px;
     white-space:nowrap;cursor:pointer}
-  .cl.na{background:#F4F1E4;color:#7A6A2F;border-color:#DBD2AC}
+  .cl.na{background:#F9FAFC;color:#636669;border-color:var(--pale)}
   .cl.custom{background:#E6F3E9;color:#1D5A31;border-color:#B4D9BE}
-  .cl:hover{outline:2px solid var(--accent)}
+  .cl:hover{outline:2px solid var(--blue)}
   .copy{background:none;border:none;padding:0 3px;margin-left:2px;cursor:pointer;
     font-size:13px;line-height:1;color:var(--steel-dark);border-radius:3px;vertical-align:middle}
-  .copy:hover{color:var(--ink);outline:2px solid var(--accent)}
+  .copy:hover{color:var(--ink);outline:2px solid var(--blue)}
   .leyenda{font-size:11px;color:var(--muted);margin-top:8px}
-  .pu{font-family:var(--mono);font-size:12px;background:#FFF6DA;color:#6B4E00;
-    border:1px solid #E8D48A;border-radius:4px;padding:1px 6px;cursor:pointer;white-space:nowrap}
+  .pu{font-family:var(--mono);font-size:12px;background:var(--box);color:var(--ink);
+    border:1px solid var(--pale);border-radius:4px;padding:1px 6px;cursor:pointer;white-space:nowrap}
   .pu.vacio{background:#F1F3F5;color:var(--muted);border-color:var(--line)}
-  .pu:hover{outline:2px solid var(--accent)}
+  .pu:hover{outline:2px solid var(--blue)}
   table.cot{width:100%;border-collapse:collapse;font-size:13px}
   table.cot th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;
     color:var(--muted);text-align:left;padding:2px;border-bottom:2px solid var(--ink)}
@@ -119,17 +125,16 @@
   table.cot td:nth-child(4),table.cot th:nth-child(4){text-align:right;font-family:var(--mono)}
   table.cot td:nth-child(4){font-weight:700}
   tr.cot-tot td{border-top:2px solid var(--ink);border-bottom:none;font-weight:700}
-  .misc{background:#F6F8F9;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:8px}
+  .misc{background:var(--box);border:1px solid var(--pale);border-radius:8px;padding:12px;margin-top:8px}
   .totales{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
-  .kpi{flex:1;min-width:105px;border:2px solid var(--ink);border-radius:8px;
-    padding:8px 10px;text-align:center;background:#fff}
-  .kpi b{display:block;font-family:var(--mono);font-size:21px}
-  .kpi span{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .kpi{flex:1;min-width:105px;border-radius:8px;padding:9px 10px;text-align:center;
+    background:var(--ink)}
+  .kpi b{display:block;font-family:var(--mono);font-size:21px;color:var(--sky)}
+  .kpi span{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--pale)}
   .acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
   .nota{font-size:12px;color:var(--muted);margin-top:10px}
   @media print{
     body{background:#fff;padding:0}
-    header .logo{box-shadow:none}
     .no-print{display:none !important}
     .card{border:none;padding:0}
     .ticket{border:1px solid #000}
@@ -141,9 +146,12 @@
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <span class="logo">Conduit + Charofil</span>
-    <h1>Calculadora de material eléctrico</h1>
+  <header class="no-print">
+    <img class="brand" src="data:image/png;base64,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" alt="SITI">
+    <div class="brand-tit">
+      <h1>Calculadora de material eléctrico</h1>
+      <span class="brand-slogan">Servicio e Infraestructura en Telecomunicaciones Integrales</span>
+    </div>
     <p>Conduit (galvanizada delgada / gruesa / PVC, ½"–2") y escalerilla Charofil (50–300 mm). Captura por área con montaje aéreo o por pared, soportería desglosada por área, y claves y precios de syscom.mx editables que se guardan para futuros casos, con costo estimado de compra.</p>
   </header>
 
@@ -263,9 +271,9 @@
             <input id="tCodos" type="number" step="1" min="0" placeholder="0" inputmode="numeric"></div>
         </div>
         <div class="field">
-          <label>Registros y condulets (opcional)</label>
+          <label>Registros, tapas y condulets (opcional)</label>
           <div id="accList"></div>
-          <button type="button" class="btn-ghost" id="btnAddAcc" style="width:100%">+ Agregar registro / condulet</button>
+          <button type="button" class="btn-ghost" id="btnAddAcc" style="width:100%">+ Agregar registro / tapa / condulet</button>
         </div>
         <p class="hint">Aérea con clip: colgador tipo pera + 1 espárrago por soporte. Aérea con unicanal: trapecio con 2 espárragos por soporte. Por pared con unicanal: se fija con 2 anclas por soporte. Uña = 1 pija/taquete por pieza, omega = 2. El condulet toma el diámetro del tramo; el registro/caja es independiente del diámetro.</p>
       </div>
@@ -315,6 +323,7 @@
       <h2 class="no-print">Lista de material</h2>
       <div class="ticket" id="ticket">
         <div class="ticket-head">
+          <img class="vale-logo" src="data:image/png;base64,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" alt="SITI">
           <h3>Vale de material · Instalación eléctrica</h3>
           <span class="folio" id="folio"></span>
         </div>
@@ -360,13 +369,23 @@ const REGISTROS = {
   r231:  'Caja cuadrada galv. 4x4, prof. 2 1/8" (entradas ¾")',
   r233:  'Caja cuadrada galv. 4x4, prof. 2 1/8" (entradas 1", soldada)',
   r260:  'Caja cuadrada galv. 4 11/16", prof. 3 1/4" (hasta 2")',
-  rT752: 'Tapa cuadrada ciega 4" galv.',
-  rT753: 'Tapa cuadrada 4" galv. c/ entrada ½"',
   rP12:  'Caja cuadrada PVC pesado ½"',
   rP34:  'Caja cuadrada PVC pesado ½"–¾"',
-  rP1:   'Caja cuadrada + tapa PVC pesado 1"',
-  rPT4:  'Tapa p/ caja cuadrada PVC pesado 4"'
+  rP1:   'Caja cuadrada + tapa PVC pesado 1"'
 };
+const TAPAS = {
+  rT752:  'Tapa cuadrada ciega 4" galv.',
+  rT753:  'Tapa cuadrada 4" galv. c/ entrada ½"',
+  tpC416: 'Tapa cuadrada ciega 4 11/16" galv.',
+  tp833:  'Tapa cuadrada 4 11/16" galv. c/ entrada ½"',
+  st771:  'Sobretapa cuadrada 4", realce ¼"',
+  st772:  'Sobretapa cuadrada 4", realce ½"',
+  st837:  'Sobretapa cuadrada 4 11/16", realce ½"',
+  st838:  'Sobretapa cuadrada 4 11/16", realce ¾"',
+  stP4:   'Sobretapa plana 4"',
+  rPT4:   'Tapa p/ caja cuadrada PVC pesado 4"'
+};
+const REG_NOMBRE = id => REGISTROS[id] || TAPAS[id] || id;
 const CONDULETS = { LB:"Condulet LB", LL:"Condulet LL", LR:"Condulet LR",
   T:"Condulet T", C:"Condulet C", FS1:"Condulet FS 1 boca",
   FS2:"Condulet FS 2 bocas", FS3:"Condulet FS 3 bocas" };
@@ -412,7 +431,10 @@ Object.values(DIAM_CODE).forEach(d => {
 def("reg|r232", "HUB-232", true);  def("reg|r231", "HUB-231", true);
 def("reg|r233", "HUB-233", true);  def("reg|r260", "HUB-260", true);
 def("reg|rT752", "HUB-752", true); def("reg|rT753", "HUB-753", true);
-["rP12","rP34","rP1","rPT4"].forEach(r => def("reg|" + r, null, false));
+def("reg|tp833", "HUB-833", true);
+def("reg|st771", "HUB-771", true); def("reg|st772", "HUB-772", true);
+def("reg|st837", "HUB-837", true); def("reg|st838", "HUB-838", true);
+["rP12","rP34","rP1","rPT4","tpC416","stP4"].forEach(r => def("reg|" + r, null, false));
 Object.values(ANCHO_CODE).forEach(a => {
   def("charola|" + a, "CH-54-" + a + "EZ", ["100","150"].includes(a));
   def("union|" + a, a === "300" ? "MG-51-110EZ" : "MG-67-112EZ", true);
@@ -665,7 +687,7 @@ function partidasCotizacion(d){
     }
     push("Codo 90° " + n, "codo|" + g.tipo + "|" + dc, g.codos);
   });
-  d.regs.forEach((n, id) => push(REGISTROS[id], "reg|" + id, n));
+  d.regs.forEach((n, id) => push(REG_NOMBRE(id), "reg|" + id, n));
   d.conds.forEach((n, ck) => {
     const p = ck.split("|");
     push(CONDULETS[p[0]] + " " + p[1], "cond|" + p[0] + "|" + DIAM_CODE[p[1]], n);
@@ -798,7 +820,7 @@ function renderTramos(){
         TIPOS[t.tipo].nombre + " · " + t.diam + " · " + mont + " · " +
         SUJ_NOMBRE[t.sujecion] + " · " + t.salidas + " sal · " + t.codos + " codos";
       const nAcc = (t.accs || []).reduce((a, x) => a + x.cant, 0);
-      if (nAcc) desc += " · " + nAcc + " reg/condulet";
+      if (nAcc) desc += " · " + nAcc + " accesorios";
     } else {
       desc = '<span class="chip CH">CH</span> Charofil ' + t.ancho + " · " + mont +
         " · " + UNI_NOMBRE[t.uniMedida];
@@ -902,8 +924,8 @@ function renderTicket(){
     });
   }
   if (d.regs.size || d.conds.size){
-    html += '<div class="seccion">Registros y condulets</div><div class="grupo"><table class="mat"><tbody>';
-    d.regs.forEach((n, id) => html += fila(REGISTROS[id] + " (pza)", n, { key: "reg|" + id }));
+    html += '<div class="seccion">Registros, tapas y condulets</div><div class="grupo"><table class="mat"><tbody>';
+    d.regs.forEach((n, id) => html += fila(REG_NOMBRE(id) + " (pza)", n, { key: "reg|" + id }));
     d.conds.forEach((n, ck) => {
       const p = ck.split("|");
       html += fila(CONDULETS[p[0]] + " " + p[1] + " (pza)", n, { key: "cond|" + p[0] + "|" + DIAM_CODE[p[1]] });
@@ -1239,11 +1261,15 @@ function nuevaFilaAcc(){
     const o = document.createElement("option");
     o.value = v; o.textContent = txt; (dest || sel).appendChild(o);
   };
-  op("", "— Elegir registro o condulet —");
+  op("", "— Elegir registro, tapa o condulet —");
   const g1 = document.createElement("optgroup");
   g1.label = "Registros / cajas";
   Object.keys(REGISTROS).forEach(id => op("reg:" + id, REGISTROS[id], g1));
   sel.appendChild(g1);
+  const gT = document.createElement("optgroup");
+  gT.label = "Tapas y sobretapas";
+  Object.keys(TAPAS).forEach(id => op("reg:" + id, TAPAS[id], gT));
+  sel.appendChild(gT);
   const g2 = document.createElement("optgroup");
   g2.label = "Condulets (del Ø del tramo)";
   Object.keys(CONDULETS).forEach(id => op("cond:" + id, CONDULETS[id], g2));
