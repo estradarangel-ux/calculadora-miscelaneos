@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora de material · Conduit y Charofil</title>
+<title>Calculadora de material · SITI</title>
+<meta name="theme-color" content="#0A2540">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -238,15 +241,13 @@
               <option>1½" (38 mm)</option><option>2" (51 mm)</option>
             </select></div>
         </div>
-        <div class="grid2">
-          <div class="field"><label for="tMontaje">¿La instalación es aérea o por pared?</label>
-            <select id="tMontaje">
-              <option value="A">Aérea (colgada de losa/techo)</option>
-              <option value="P">Por pared / muro</option>
-            </select></div>
-          <div class="field"><label for="tSujecion">Sujeción / abrazadera</label>
-            <select id="tSujecion"></select></div>
-        </div>
+        <div class="field"><label for="tSujecion">Sujeción / abrazadera</label>
+          <select id="tSujecion">
+            <option value="una">Abrazadera uña (pija y taquete al muro)</option>
+            <option value="omega">Abrazadera omega (pija y taquete al muro)</option>
+            <option value="clip">Abrazadera clip (pija y taquete al muro)</option>
+            <option value="uni">Trapecio de unicanal (aéreo, con espárragos)</option>
+          </select></div>
         <div class="grid2" id="uniFieldsC" hidden>
           <div class="field"><label for="tUniMedida">Medida de la unicanal</label>
             <select id="tUniMedida">
@@ -258,7 +259,7 @@
           <div class="field"><label for="tUniLargo">Largo de unicanal por soporte (m)</label>
             <input id="tUniLargo" type="number" step="0.05" min="0.05" value="0.30" inputmode="decimal"></div>
         </div>
-        <div class="grid2" id="espFieldC" >
+        <div class="grid2" id="espFieldC" hidden>
           <div class="field"><label for="tEspLargo">Largo promedio de espárrago (m)</label>
             <input id="tEspLargo" type="number" step="0.05" min="0.05" value="0.40" inputmode="decimal"></div>
         </div>
@@ -275,7 +276,7 @@
           <div id="accList"></div>
           <button type="button" class="btn-ghost" id="btnAddAcc" style="width:100%">+ Agregar registro / tapa / condulet</button>
         </div>
-        <p class="hint">Aérea con clip: colgador tipo pera + 1 espárrago por soporte. Aérea con unicanal: trapecio con 2 espárragos por soporte. Por pared con unicanal: se fija con 2 anclas por soporte. Uña = 1 pija/taquete por pieza, omega = 2. El condulet toma el diámetro del tramo; el registro/caja es independiente del diámetro.</p>
+        <p class="hint">Trapecio de unicanal: 2 espárragos por soporte (cada uno con ancla, 2 tuercas y 2 rondanas) más la unicanal indicada. Uña y clip: 1 pija + 1 taquete por soporte; omega: 2. El condulet toma el diámetro del tramo; el registro/caja es independiente del diámetro.</p>
       </div>
 
       <!-- Campos charofil -->
@@ -355,9 +356,8 @@ const DIAM_CODE = { '½" (13 mm)':"12", '¾" (19 mm)':"34", '1" (25 mm)':"100",
 const ANCHO_CODE = { "50 mm":"50", "100 mm":"100", "150 mm":"150", "200 mm":"200", "300 mm":"300" };
 const UNI_NOMBRE = { "4x2L":"Unicanal 4x2 lisa", "4x2T":"Unicanal 4x2 troquelada",
                      "4x4L":"Unicanal 4x4 lisa", "4x4T":"Unicanal 4x4 troquelada" };
-const SUJ_NOMBRE = { clip:"Clip colgador", uni:"Trapecio unicanal",
-  una:"Abrazadera uña", omega:"Abrazadera omega",
-  uniAbr:"Unicanal c/ abrazadera", uniClip:"Unicanal c/ clip" };
+const SUJ_NOMBRE = { uni:"Trapecio unicanal", una:"Abrazadera uña",
+  omega:"Abrazadera omega", clip:"Abrazadera clip" };
 const ABR_NOMBRE = {
   una:   { D:"Abrazadera uña p. delgada",      G:"Abrazadera uña p. gruesa/PVC" },
   omega: { D:"Abrazadera omega p. delgada",    G:"Abrazadera omega p. gruesa" },
@@ -554,22 +554,14 @@ function calcConduit(t, p){
     uniMedida: null, uniM: 0, espPzas: 0, espM: 0, anclasMuro: 0
   };
   if (s === 0) return out;
-  if (t.montaje === "A"){
-    if (t.sujecion === "clip"){
-      out.colgadores = s; out.espPzas = s; out.espM = s * t.espLargo;
-    } else {
-      out.abrKey = "strut";
-      out.uniMedida = t.uniMedida; out.uniM = s * t.uniLargo;
-      out.espPzas = s * 2; out.espM = s * 2 * t.espLargo;
-    }
+  if (t.sujecion === "uni"){
+    out.abrKey = "strut";
+    out.uniMedida = t.uniMedida; out.uniM = s * t.uniLargo;
+    out.espPzas = s * 2; out.espM = s * 2 * t.espLargo;
   } else {
-    if (t.sujecion === "una"){ out.abrKey = "una"; out.pijas = s; out.taquetes = s; }
-    else if (t.sujecion === "omega"){ out.abrKey = "omega"; out.pijas = s * 2; out.taquetes = s * 2; }
-    else {
-      out.abrKey = t.sujecion === "uniAbr" ? "strut" : "clip";
-      out.uniMedida = t.uniMedida; out.uniM = s * t.uniLargo;
-      out.anclasMuro = s * 2;
-    }
+    out.abrKey = t.sujecion;                       // una / omega / clip
+    const porSoporte = t.sujecion === "omega" ? 2 : 1;
+    out.pijas = s * porSoporte; out.taquetes = s * porSoporte;
   }
   return out;
 }
@@ -721,28 +713,10 @@ function partidasCotizacion(d){
 }
 
 /* =============== UI: formulario =============== */
-const SUJ_OPCIONES = {
-  A: [["clip","Abrazadera clip (colgador a espárrago)"], ["uni","Trapecio de unicanal"]],
-  P: [["una","Abrazadera uña"], ["omega","Abrazadera omega"],
-      ["uniAbr","Unicanal con abrazadera"], ["uniClip","Unicanal con clip"]]
-};
-function refrescarSujecion(){
-  const m = $("tMontaje").value;
-  const sel = $("tSujecion");
-  const prev = sel.value;
-  sel.innerHTML = "";
-  SUJ_OPCIONES[m].forEach(par => {
-    const o = document.createElement("option");
-    o.value = par[0]; o.textContent = par[1]; sel.appendChild(o);
-  });
-  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
-  refrescarCamposC();
-}
 function refrescarCamposC(){
-  const m = $("tMontaje").value, s = $("tSujecion").value;
-  const usaUni = (m === "A" && s === "uni") || (m === "P" && (s === "uniAbr" || s === "uniClip"));
-  $("uniFieldsC").hidden = !usaUni;
-  $("espFieldC").hidden = m !== "A";
+  const uni = $("tSujecion").value === "uni";
+  $("uniFieldsC").hidden = !uni;
+  $("espFieldC").hidden = !uni;
 }
 function refrescarCamposCH(){
   $("espFieldCH").style.visibility = $("cMontaje").value === "A" ? "visible" : "hidden";
@@ -769,7 +743,8 @@ function agregarTramo(){
       id: Date.now() + Math.random(), sistema:"C",
       area: $("tArea").value.trim() || "Sin área",
       tipo: $("tTipo").value, diam: $("tDiam").value,
-      montaje: $("tMontaje").value, sujecion: $("tSujecion").value,
+      montaje: $("tSujecion").value === "uni" ? "A" : "P",
+      sujecion: $("tSujecion").value,
       uniMedida: $("tUniMedida").value,
       uniLargo: Math.max(parseFloat($("tUniLargo").value) || 0.30, 0.05),
       espLargo: Math.max(parseFloat($("tEspLargo").value) || 0.40, 0.05),
@@ -1145,7 +1120,6 @@ function descargarCSV(){
 /* =============== Eventos =============== */
 $("tabC").addEventListener("click", () => setSistema("C"));
 $("tabCH").addEventListener("click", () => setSistema("CH"));
-$("tMontaje").addEventListener("change", refrescarSujecion);
 $("tSujecion").addEventListener("change", refrescarCamposC);
 $("cMontaje").addEventListener("change", refrescarCamposCH);
 $("btnAdd").addEventListener("click", agregarTramo);
@@ -1287,7 +1261,7 @@ function nuevaFilaAcc(){
   sel.focus();
 }
 $("btnAddAcc").addEventListener("click", nuevaFilaAcc);
-refrescarSujecion();
+refrescarCamposC();
 refrescarCamposCH();
 render();
 (async () => {
@@ -1298,6 +1272,13 @@ render();
     "Catálogo cargado: " + n + " claves y " + m + " precios personalizados.";
   render();
 })();
+
+/* =============== PWA: registro del service worker =============== */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
